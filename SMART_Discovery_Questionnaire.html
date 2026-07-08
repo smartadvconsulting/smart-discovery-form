@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SMART Package Fit: Discovery Questionnaire</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --coral: #FF5A45; --coral-light: #FFE7E2; --coral-mid: #FFBEB6;
+    --slate: #252A32; --slate-mid: #4A5060;
+    --grey-line: #ECEAE8; --grey-bg: #F5F4F2; --grey-label: #A6A6A6;
+    --white: #FFFFFF; --black: #111111;
+    --green: #1A9E6E; --green-light: #D8F3EA;
+  }
+  html { font-size: 16px; }
+  body { background: #EDECEA; font-family: 'Inter', sans-serif; color: var(--black); min-height: 100vh; padding: 40px 20px 80px; }
+  .wrapper { max-width: 680px; margin: 0 auto; }
+  .header { background: var(--white); border-radius: 16px; padding: 36px 40px 32px; margin-bottom: 20px; border-top: 5px solid var(--coral); }
+  .header-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; }
+  .header-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--coral); flex-shrink: 0; }
+  .header-brand { font-family: 'League Spartan', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--slate); }
+  .header h1 { font-family: 'League Spartan', sans-serif; font-weight: 800; font-size: 34px; line-height: 1; letter-spacing: -0.01em; color: var(--black); margin-bottom: 10px; }
+  .header h1 span { color: var(--coral); }
+  .header-sub { font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--slate-mid); line-height: 1.55; max-width: 520px; }
+  .header-note { display: inline-flex; align-items: center; gap: 6px; background: var(--grey-bg); border-radius: 8px; padding: 8px 12px; margin-top: 16px; font-size: 12px; color: var(--slate-mid); }
+  .progress-bar-wrap { background: var(--white); border-radius: 12px; padding: 16px 24px; margin-bottom: 20px; display: flex; align-items: center; gap: 14px; }
+  .progress-track { flex: 1; height: 6px; background: var(--grey-line); border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--coral); border-radius: 99px; transition: width 0.4s ease; width: 0%; }
+  .progress-label { font-size: 12px; font-weight: 600; color: var(--grey-label); white-space: nowrap; min-width: 65px; text-align: right; }
+  .section-block { background: var(--white); border-radius: 16px; padding: 32px 40px; margin-bottom: 16px; }
+  .section-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--coral); margin-bottom: 6px; }
+  .section-title { font-family: 'League Spartan', sans-serif; font-weight: 700; font-size: 20px; color: var(--black); margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--grey-line); }
+  .question { margin-bottom: 28px; }
+  .question:last-child { margin-bottom: 0; }
+  .question-label { font-weight: 600; font-size: 14px; color: var(--black); margin-bottom: 5px; line-height: 1.4; }
+  .question-hint { font-size: 12px; color: var(--grey-label); margin-bottom: 12px; line-height: 1.5; }
+  .options-grid { display: flex; flex-direction: column; gap: 7px; }
+  .options-grid.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+  .opt { display: flex; align-items: flex-start; gap: 10px; border: 1.5px solid var(--grey-line); border-radius: 10px; padding: 11px 13px; cursor: pointer; transition: border-color 0.18s, background 0.18s; background: var(--white); user-select: none; }
+  .opt:hover { border-color: var(--coral-mid); background: #FFF9F8; }
+  .opt.selected { border-color: var(--coral); background: var(--coral-light); }
+  .opt-check { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--grey-line); flex-shrink: 0; margin-top: 1px; transition: border-color 0.18s, background 0.18s; display: flex; align-items: center; justify-content: center; }
+  .opt.selected .opt-check { border-color: var(--coral); background: var(--coral); }
+  .opt-check-inner { width: 8px; height: 8px; border-radius: 50%; background: var(--white); opacity: 0; transition: opacity 0.18s; }
+  .opt.selected .opt-check-inner { opacity: 1; }
+  .opt-multi .opt-check { border-radius: 4px; }
+  .opt-multi.selected .opt-check { border-color: var(--coral); background: var(--coral); }
+  .opt-multi.selected .opt-check-inner { width: 10px; height: 7px; border-radius: 0; background: transparent; border-bottom: 2px solid white; border-right: 2px solid white; transform: rotate(45deg) translate(-1px,-2px); opacity: 1; }
+  .opt-text { flex: 1; }
+  .opt-title { font-size: 13.5px; font-weight: 500; color: var(--black); line-height: 1.4; }
+  .opt-desc { font-size: 11.5px; color: var(--grey-label); margin-top: 2px; line-height: 1.4; }
+  .open-text { width: 100%; border: 1.5px solid var(--grey-line); border-radius: 10px; padding: 13px 14px; font-family: 'Inter', sans-serif; font-size: 13.5px; color: var(--black); resize: vertical; min-height: 90px; transition: border-color 0.18s; background: var(--white); line-height: 1.5; }
+  .open-text:focus { outline: none; border-color: var(--coral); }
+  .open-text::placeholder { color: var(--grey-label); }
+  .submit-wrap { text-align: center; margin-top: 28px; }
+  .btn-submit { background: var(--coral); color: var(--white); font-family: 'League Spartan', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 0.04em; border: none; border-radius: 10px; padding: 16px 48px; cursor: pointer; transition: background 0.18s, transform 0.1s; display: inline-flex; align-items: center; gap: 8px; }
+  .btn-submit:hover { background: #e84d39; }
+  .btn-submit:active { transform: scale(0.98); }
+  .btn-submit:disabled { background: var(--grey-label); cursor: not-allowed; transform: none; }
+  .submit-note { font-size: 12px; color: var(--grey-label); margin-top: 10px; }
+  #result-panel { display: none; }
+  .result-header { background: var(--white); border-radius: 16px; padding: 36px 40px 32px; margin-bottom: 16px; border-top: 5px solid var(--coral); }
+  .result-label { font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--coral); margin-bottom: 8px; }
+  .result-package { font-family: 'League Spartan', sans-serif; font-weight: 800; font-size: 38px; color: var(--black); line-height: 1; margin-bottom: 8px; }
+  .result-package span { color: var(--coral); }
+  .result-promise { font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--slate-mid); margin-bottom: 20px; }
+  .result-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .chip { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 99px; font-size: 12px; font-weight: 600; }
+  .chip-coral { background: var(--coral); color: var(--white); }
+  .chip-outline { border: 1.5px solid var(--grey-line); color: var(--slate); background: var(--white); }
+  .chip-green { background: var(--green-light); color: var(--green); }
+  .result-card { background: var(--white); border-radius: 16px; padding: 28px 40px; margin-bottom: 16px; }
+  .result-section-title { font-family: 'League Spartan', sans-serif; font-weight: 700; font-size: 16px; color: var(--black); margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--grey-line); display: flex; align-items: center; gap: 8px; }
+  .result-section-title::before { content: ''; display: block; width: 4px; height: 18px; background: var(--coral); border-radius: 2px; }
+  .module-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--grey-line); }
+  .module-row:last-child { border-bottom: none; }
+  .module-marker { width: 9px; height: 9px; border-radius: 2px; background: var(--coral); flex-shrink: 0; margin-top: 4px; }
+  .module-name { font-weight: 600; font-size: 13.5px; color: var(--black); flex: 1; }
+  .module-name .smart { color: var(--coral); }
+  .module-desc { font-size: 12px; color: var(--grey-label); margin-top: 2px; line-height: 1.45; }
+  .module-tag { flex-shrink: 0; background: var(--grey-bg); border-radius: 5px; padding: 3px 8px; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--slate-mid); }
+  .depth-row { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--grey-line); }
+  .depth-row:last-child { border-bottom: none; }
+  .depth-name { font-weight: 600; font-size: 13.5px; color: var(--black); min-width: 60px; }
+  .depth-desc { font-size: 12.5px; color: var(--slate-mid); }
+  .depth-hours { font-size: 12px; font-weight: 700; color: var(--coral); white-space: nowrap; }
+  .recommended-badge { display: inline-flex; align-items: center; gap: 5px; background: var(--green-light); color: var(--green); border-radius: 99px; padding: 3px 10px; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; }
+  .result-open-text { background: var(--grey-bg); border-radius: 10px; padding: 16px 18px; font-size: 13.5px; color: var(--slate); line-height: 1.55; font-style: italic; border-left: 3px solid var(--coral); margin-bottom: 12px; }
+  .result-open-text:last-child { margin-bottom: 0; }
+  .reasoning-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; font-size: 13px; color: var(--slate-mid); line-height: 1.5; }
+  .reasoning-item::before { content: '→'; color: var(--coral); font-weight: 700; flex-shrink: 0; }
+  .btn-restart { background: var(--grey-bg); color: var(--slate); font-family: 'League Spartan', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 0.04em; border: none; border-radius: 10px; padding: 14px 28px; cursor: pointer; transition: background 0.18s; display: inline-flex; align-items: center; gap: 8px; margin-top: 8px; }
+  .btn-restart:hover { background: var(--grey-line); }
+  .tool-tag { display: inline-flex; align-items: center; background: var(--grey-bg); border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: 600; color: var(--slate-mid); margin: 3px; }
+  @media (max-width: 600px) {
+    body { padding: 20px 12px 60px; }
+    .header, .section-block, .result-card, .result-header { padding: 24px 20px; }
+    .options-grid.two-col { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- FORM PANEL -->
+  <div id="form-panel">
+
+    <div class="header">
+      <div class="header-meta"><div class="header-dot"></div><div class="header-brand">SMART Advanced Consulting</div></div>
+      <h1>Package Fit<br><span>Discovery</span></h1>
+      <p class="header-sub">A few questions to help us recommend the right starting point for your Asana engagement. No homework. This takes around 5 minutes.</p>
+      <div class="header-note">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#A6A6A6" stroke-width="1.5"/><path d="M7 6v4M7 4.5v.5" stroke="#A6A6A6" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Your answers are used only to shape a package recommendation. Nothing is binding.
+      </div>
+    </div>
+
+    <div class="progress-bar-wrap">
+      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+      <div class="progress-label" id="progress-label">0 of 14</div>
+    </div>
+
+    <!-- SECTION 1 -->
+    <div class="section-block">
+      <div class="section-eyebrow">Section 1 of 4</div>
+      <div class="section-title">About your organisation and Asana</div>
+
+      <div class="question">
+        <div class="question-label">1. Which best describes your current Asana situation?</div>
+        <div class="question-hint">Pick the one that fits most closely. This is the first signal for which package makes sense.</div>
+        <div class="options-grid" id="q1">
+          <div class="opt" data-q="q1" data-val="0" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">We are not using Asana yet, or just getting started</div></div></div>
+          <div class="opt" data-q="q1" data-val="1" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">We use Asana, but it feels messy or inconsistent</div><div class="opt-desc">Work is scattered, naming is inconsistent, or we are not sure it reflects how we actually operate.</div></div></div>
+          <div class="opt" data-q="q1" data-val="2" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">We have some workflows, but they need proper design or improvement</div><div class="opt-desc">Things exist, but processes are unclear, inconsistent, or built without much structure.</div></div></div>
+          <div class="opt" data-q="q1" data-val="3" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">We have a working system and need it to work across multiple teams</div><div class="opt-desc">Our team operates well, but we need consistency, visibility, or governance at a broader level.</div></div></div>
+          <div class="opt" data-q="q1" data-val="9" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">We have a stable, governed Asana system and want to explore AI</div><div class="opt-desc">Processes are well-designed and documented. We are ready for the next layer.</div></div></div>
+          <div class="opt" data-q="q1" data-val="-1" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">We are not sure where we sit. We need help working that out first.</div></div></div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-label">2. Which best describes how your organisation primarily operates?</div>
+        <div class="question-hint">This helps us understand the nature of your work, not just the industry label. Pick the one that fits most closely.</div>
+        <div class="options-grid" id="q2">
+          <div class="opt" data-q="q2" data-val="client_delivery" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">We deliver projects or services to clients</div><div class="opt-desc">Agency, consultancy, professional services, construction, engineering, or similar. Client-facing work with defined deliverables.</div></div></div>
+          <div class="opt" data-q="q2" data-val="internal_ops" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">We run internal operations or support other teams</div><div class="opt-desc">Finance, HR, IT, legal, admin, or shared services. The work serves the organisation rather than external clients.</div></div></div>
+          <div class="opt" data-q="q2" data-val="product_campaign" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">We produce and launch products or campaigns</div><div class="opt-desc">Marketing, creative, product development, retail, or media. Work is organised around launches, campaigns, or releases.</div></div></div>
+          <div class="opt" data-q="q2" data-val="regulated" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">We manage cases, applications, or regulated processes</div><div class="opt-desc">Pharma, finance, legal, healthcare, or government. Compliance, approvals, and audit trails are part of how we work.</div></div></div>
+          <div class="opt" data-q="q2" data-val="mixed" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">A mix: we do both client-facing and internal work</div><div class="opt-desc">Teams operate differently depending on whether the work is internal or external.</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2 -->
+    <div class="section-block">
+      <div class="section-eyebrow">Section 2 of 4</div>
+      <div class="section-title">Your team and scope</div>
+
+      <div class="question">
+        <div class="question-label">3. How many people will be actively using or affected by this Asana setup?</div>
+        <div class="question-hint">Include anyone who will work in or rely on the system, not just the core team.</div>
+        <div class="options-grid two-col" id="q3">
+          <div class="opt" data-q="q3" data-val="1" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">1 – 10 people</div></div></div>
+          <div class="opt" data-q="q3" data-val="2" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">11 – 30 people</div></div></div>
+          <div class="opt" data-q="q3" data-val="3" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">31 – 75 people</div></div></div>
+          <div class="opt" data-q="q3" data-val="4" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">76 or more</div></div></div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-label">4. How many teams or departments need to be involved?</div>
+        <div class="question-hint">A team is a distinct group with its own processes, even within the same company.</div>
+        <div class="options-grid two-col" id="q4">
+          <div class="opt" data-q="q4" data-val="1" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Just one team</div></div></div>
+          <div class="opt" data-q="q4" data-val="2" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Two to three teams</div></div></div>
+          <div class="opt" data-q="q4" data-val="3" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Four or more teams</div></div></div>
+          <div class="opt" data-q="q4" data-val="0" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Not sure yet</div></div></div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-label">5. Does work move between teams (handoffs, approvals, shared tasks)?</div>
+        <div class="question-hint">Think about whether one team's output becomes another team's input.</div>
+        <div class="options-grid" id="q5">
+          <div class="opt" data-q="q5" data-val="0" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">No, work stays within one team</div></div></div>
+          <div class="opt" data-q="q5" data-val="1" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Occasionally, some things move across teams</div></div></div>
+          <div class="opt" data-q="q5" data-val="2" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Yes, regularly. Cross-team flow is part of how we work.</div></div></div>
+          <div class="opt" data-q="q5" data-val="3" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Yes, and broken handoffs are one of our main problems right now</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 3 -->
+    <div class="section-block">
+      <div class="section-eyebrow">Section 3 of 4</div>
+      <div class="section-title">Your workflows, tools, and pain points</div>
+
+      <div class="question">
+        <div class="question-label">6. What types of work or projects does your team primarily manage? <span style="font-weight:400; color: var(--grey-label);">(Select all that apply)</span></div>
+        <div class="question-hint">This shapes the structure of what gets built. Different work types require different templates, fields, and layouts in Asana.</div>
+        <div class="options-grid" id="q6">
+          <div class="opt opt-multi" data-q="q6" data-val="timebound" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Time-bound projects with deadlines and milestones</div><div class="opt-desc">Projects with a defined start and end, tracked against phases or deliverables.</div></div></div>
+          <div class="opt opt-multi" data-q="q6" data-val="ongoing" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Ongoing or repeating operations (no fixed end date)</div><div class="opt-desc">Work that runs continuously: weekly routines, recurring tasks, or rolling processes.</div></div></div>
+          <div class="opt opt-multi" data-q="q6" data-val="campaigns" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Campaigns or launches</div><div class="opt-desc">Work organised around a specific release, event, or campaign with a defined go-live.</div></div></div>
+          <div class="opt opt-multi" data-q="q6" data-val="intake" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Intake and request management</div><div class="opt-desc">Work that comes in from others: briefs, requests, or tickets that need to be triaged and assigned.</div></div></div>
+          <div class="opt opt-multi" data-q="q6" data-val="approvals" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Approvals and review processes</div><div class="opt-desc">Work that requires sign-off, feedback cycles, or formal review stages before it is complete.</div></div></div>
+          <div class="opt opt-multi" data-q="q6" data-val="sops" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">SOPs, documentation, or reference material</div><div class="opt-desc">Storing processes, policies, knowledge, or reference information the team needs to access regularly.</div></div></div>
+          <div class="opt opt-multi" data-q="q6" data-val="client_info" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Client or product information management</div><div class="opt-desc">Tracking client records, product details, or reference data, using Asana as a structured information store.</div></div></div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-label">7. How many processes or workflows do you want to address in this engagement?</div>
+        <div class="question-hint">A workflow is a repeatable process, e.g. client onboarding, campaign delivery, request intake, project delivery. An estimate is fine.</div>
+        <div class="options-grid two-col" id="q7">
+          <div class="opt" data-q="q7" data-val="1" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">One</div></div></div>
+          <div class="opt" data-q="q7" data-val="2" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Two to three</div></div></div>
+          <div class="opt" data-q="q7" data-val="3" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Four or more</div></div></div>
+          <div class="opt" data-q="q7" data-val="0" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Not sure yet</div></div></div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-label">8. How would you describe the complexity of your current workflows?</div>
+        <div class="question-hint">Complexity includes number of steps, approval stages, roles involved, and exceptions.</div>
+        <div class="options-grid" id="q8">
+          <div class="opt" data-q="q8" data-val="1" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Simple</div><div class="opt-desc">A few clear steps, one or two people, straightforward ownership.</div></div></div>
+          <div class="opt" data-q="q8" data-val="2" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Moderate</div><div class="opt-desc">Several steps, a few roles, and some dependencies or handoffs involved.</div></div></div>
+          <div class="opt" data-q="q8" data-val="3" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Complex</div><div class="opt-desc">Many stages, multiple approvals, dependencies between tasks, or frequent exceptions.</div></div></div>
+          <div class="opt" data-q="q8" data-val="4" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Very complex</div><div class="opt-desc">Multiple teams, tools, reporting requirements, and approval layers all involved at once.</div></div></div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-label">9. Where are the biggest problems in how your team works right now? <span style="font-weight:400; color: var(--grey-label);">(Select all that apply)</span></div>
+        <div class="question-hint">Pick everything that rings true.</div>
+        <div class="options-grid" id="q9">
+          <div class="opt opt-multi" data-q="q9" data-val="visibility" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">No visibility into what is actually happening</div><div class="opt-desc">Leadership or managers cannot see the status of work without asking.</div></div></div>
+          <div class="opt opt-multi" data-q="q9" data-val="ownership" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Unclear ownership: no one knows who is responsible for what</div><div class="opt-desc">Tasks fall through because accountability is not defined.</div></div></div>
+          <div class="opt opt-multi" data-q="q9" data-val="handoffs" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Handoffs keep breaking down between people or teams</div><div class="opt-desc">Work gets stuck or lost when it moves from one person or team to the next.</div></div></div>
+          <div class="opt opt-multi" data-q="q9" data-val="scattered" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Work is scattered across too many tools or places</div><div class="opt-desc">Email, Slack, spreadsheets, and Asana are all being used with no single source of truth.</div></div></div>
+          <div class="opt opt-multi" data-q="q9" data-val="inconsistency" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Inconsistent processes: every person or team does things differently</div><div class="opt-desc">There are no agreed standards, so results and quality vary.</div></div></div>
+          <div class="opt opt-multi" data-q="q9" data-val="adoption" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Low adoption: people are not actually using the system</div><div class="opt-desc">Asana exists but the team reverts to old habits or avoids it.</div></div></div>
+          <div class="opt opt-multi" data-q="q9" data-val="reporting" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Reporting is manual or unreliable</div><div class="opt-desc">Status updates are compiled by hand, or the data cannot be trusted.</div></div></div>
+          <div class="opt opt-multi" data-q="q9" data-val="manual" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Too much manual work that should be automated</div><div class="opt-desc">Repetitive tasks, reminders, and updates are done by hand when they could be triggered automatically.</div></div></div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-label">10. What other tools is your team currently using alongside Asana? <span style="font-weight:400; color: var(--grey-label);">(Select all that apply)</span></div>
+        <div class="question-hint">This helps us understand your current stack and where Asana will need to connect or replace something.</div>
+        <div class="options-grid two-col" id="q10">
+          <div class="opt opt-multi" data-q="q10" data-val="slack" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Slack or Teams</div></div></div>
+          <div class="opt opt-multi" data-q="q10" data-val="sheets" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Spreadsheets (Excel or Google Sheets)</div></div></div>
+          <div class="opt opt-multi" data-q="q10" data-val="email" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Email for task or project tracking</div></div></div>
+          <div class="opt opt-multi" data-q="q10" data-val="monday" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Monday.com or Trello</div></div></div>
+          <div class="opt opt-multi" data-q="q10" data-val="jira" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Jira or Notion</div></div></div>
+          <div class="opt opt-multi" data-q="q10" data-val="crm" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">CRM (Salesforce, HubSpot, etc.)</div></div></div>
+          <div class="opt opt-multi" data-q="q10" data-val="drive" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Google Drive or SharePoint</div></div></div>
+          <div class="opt opt-multi" data-q="q10" data-val="other" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Other tools not listed here</div></div></div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-label">11. What else matters for this engagement? <span style="font-weight:400; color: var(--grey-label);">(Select all that apply)</span></div>
+        <div class="question-hint">These indicate which optional modules may belong in your recommendation.</div>
+        <div class="options-grid" id="q11">
+          <div class="opt opt-multi" data-q="q11" data-val="dashboards" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Dashboards or leadership reporting</div><div class="opt-desc">We need visibility into progress, not just task completion.</div></div></div>
+          <div class="opt opt-multi" data-q="q11" data-val="automation" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Automations and rules</div><div class="opt-desc">We want to remove manual steps and trigger actions automatically.</div></div></div>
+          <div class="opt opt-multi" data-q="q11" data-val="migration" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Migration from another tool or spreadsheet</div><div class="opt-desc">We are moving data, tasks, or projects from somewhere else into Asana.</div></div></div>
+          <div class="opt opt-multi" data-q="q11" data-val="training" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Team adoption and training</div><div class="opt-desc">Getting our team to actually use the system properly is as important as building it.</div></div></div>
+          <div class="opt opt-multi" data-q="q11" data-val="lead" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">An internal Asana owner or champion</div><div class="opt-desc">We want someone in our team who can manage and develop Asana after the engagement.</div></div></div>
+          <div class="opt opt-multi" data-q="q11" data-val="support" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Ongoing support after setup</div><div class="opt-desc">We want access to advice or help once the build is complete.</div></div></div>
+          <div class="opt opt-multi" data-q="q11" data-val="ai" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">AI readiness or AI workflow setup</div><div class="opt-desc">We are interested in what Asana's AI features can do for us.</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 4 -->
+    <div class="section-block">
+      <div class="section-eyebrow">Section 4 of 4</div>
+      <div class="section-title">How you want to work and what success looks like</div>
+
+      <div class="question">
+        <div class="question-label">12. How involved do you want your team to be in the build?</div>
+        <div class="question-hint">There is no wrong answer. Each approach has real advantages depending on your goals and availability.</div>
+        <div class="options-grid" id="q12">
+          <div class="opt" data-q="q12" data-val="guided" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Build it together: workshops, collaboration, learning as we go</div><div class="opt-desc">Better for long-term adoption. Requires more of your team's time during the engagement.</div></div></div>
+          <div class="opt" data-q="q12" data-val="dfy" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Build it for us. We review and approve the outcome.</div><div class="opt-desc">Faster and lighter on your team's time. We build offline and then hand it over.</div></div></div>
+          <div class="opt" data-q="q12" data-val="mix" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">A mix: some together, some built for us</div></div></div>
+          <div class="opt" data-q="q12" data-val="unsure" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Not sure. Happy to take a recommendation.</div></div></div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-label">13. What does success look like for you at the end of this engagement?</div>
+        <div class="question-hint">Think about the outcome, not the solution. Examples: "My team is actually using Asana every day," or "Leadership can see project status without asking anyone."</div>
+        <textarea class="open-text" id="q13" placeholder="Describe what a successful outcome looks like for your team..." oninput="updateProgress()"></textarea>
+      </div>
+
+      <div class="question">
+        <div class="question-label">14. In one or two sentences, what is the main problem you want Asana to solve?</div>
+        <div class="question-hint">Be honest and direct. Examples: "No one knows where work lives," or "Handoffs keep falling through," or "Leadership has no visibility."</div>
+        <textarea class="open-text" id="q14" placeholder="Describe the problem in your own words..." oninput="updateProgress()"></textarea>
+      </div>
+    </div>
+
+    <div class="submit-wrap">
+      <button class="btn-submit" onclick="generateRecommendation()" id="submit-btn" disabled>
+        Get my recommendation
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="submit-note" id="submit-note">Please answer all questions before continuing.</div>
+    </div>
+
+  </div><!-- end form-panel -->
+
+  <!-- RESULT PANEL -->
+  <div id="result-panel">
+    <div class="result-header">
+      <div class="result-label">Your SMART Package Recommendation</div>
+      <div class="result-package" id="res-package"></div>
+      <div class="result-promise" id="res-promise"></div>
+      <div class="result-chips" id="res-chips"></div>
+    </div>
+    <div class="result-card"><div class="result-section-title">Why this recommendation</div><div id="res-reasoning"></div></div>
+    <div class="result-card"><div class="result-section-title">Standard modules included</div><div id="res-modules"></div></div>
+    <div class="result-card" id="res-addons-card" style="display:none"><div class="result-section-title">Relevant add-ons to consider</div><div id="res-addons"></div></div>
+    <div class="result-card"><div class="result-section-title">Recommended depth</div><div id="res-depth"></div></div>
+    <div class="result-card"><div class="result-section-title">Delivery mode</div><div id="res-delivery"></div></div>
+    <div class="result-card" id="res-worktype-card" style="display:none"><div class="result-section-title">Work types and business context</div><div id="res-worktype"></div></div>
+    <div class="result-card" id="res-tools-card" style="display:none"><div class="result-section-title">Tools in your current stack</div><div id="res-tools"></div></div>
+    <div class="result-card" id="res-open-card" style="display:none"><div class="result-section-title">What you told us</div><div id="res-open"></div></div>
+    <div class="submit-wrap">
+      <button class="btn-restart" onclick="restart()">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7a5 5 0 1 0 1.5-3.5L2 5" stroke="#252A32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 2v3h3" stroke="#252A32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Start again
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const BACKEND_URL = 'https://smart-discovery-backend.onrender.com';
+  const TOTAL_Q = 14;
+  const answers = {};
+  const multiAnswers = { q6: [], q9: [], q10: [], q11: [] };
+
+  function pick(el) {
+    const q = el.dataset.q;
+    document.querySelectorAll('[data-q="' + q + '"]').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    const v = el.dataset.val;
+    answers[q] = isNaN(v) ? v : Number(v);
+    updateProgress();
+  }
+
+  function multi(el) {
+    el.classList.toggle('selected');
+    const q = el.dataset.q;
+    const v = el.dataset.val;
+    const arr = multiAnswers[q];
+    const idx = arr.indexOf(v);
+    if (idx > -1) arr.splice(idx, 1); else arr.push(v);
+    updateProgress();
+  }
+
+  function updateProgress() {
+    let done = 0;
+    ['q1','q2','q3','q4','q5','q7','q8','q12'].forEach(q => { if (answers[q] !== undefined) done++; });
+    done += 4; // q6, q9, q10, q11 are multi (always valid)
+    if (document.getElementById('q13').value.trim().length > 0) done++;
+    if (document.getElementById('q14').value.trim().length > 0) done++;
+    const pct = Math.round((done / TOTAL_Q) * 100);
+    document.getElementById('progress-fill').style.width = Math.min(pct, 100) + '%';
+    document.getElementById('progress-label').textContent = Math.min(done, TOTAL_Q) + ' of ' + TOTAL_Q;
+    const missing = ['q1','q2','q3','q4','q5','q7','q8','q12'].filter(q => answers[q] === undefined);
+    const btn = document.getElementById('submit-btn');
+    const note = document.getElementById('submit-note');
+    if (missing.length === 0) { btn.disabled = false; note.textContent = ''; }
+    else { btn.disabled = true; note.textContent = 'Please answer all questions before continuing.'; }
+  }
+
+  function generateRecommendation() {
+    const q1  = answers.q1;   // asana situation
+    const q2  = answers.q2;   // business type
+    const q3  = answers.q3;   // team size
+    const q4  = answers.q4;   // team count
+    const q5  = answers.q5;   // cross-functional
+    const q6  = multiAnswers.q6;  // project/work types
+    const q7  = answers.q7;   // workflow count
+    const q8  = answers.q8;   // complexity
+    const q9  = multiAnswers.q9;  // pain points
+    const q10 = multiAnswers.q10; // tools
+    const q11 = multiAnswers.q11; // desired add-ons
+    const q12 = answers.q12;  // delivery mode
+    const successText = document.getElementById('q13').value.trim();
+    const problemText = document.getElementById('q14').value.trim();
+
+    // PACKAGE LOGIC
+    let pkg = 'Foundation';
+    let reasoning = [];
+
+    if (q1 === 9) {
+      pkg = 'AI';
+      reasoning.push('You have a stable, governed Asana system in place and are ready to activate AI features. SMART AI is designed specifically for this stage.');
+    } else if (q1 === -1 || q1 === 1) {
+      pkg = 'Clarity';
+      reasoning.push('Before committing to a build, a diagnostic session will identify where the real issues are, rank priorities, and map the right next step. SMART Clarity removes the guesswork.');
+    } else if (q1 === 0) {
+      pkg = 'Foundation';
+      reasoning.push('You are starting from scratch or have limited structure in place. SMART Foundation builds the core system from the ground up.');
+    } else if (q1 === 2) {
+      if (q4 >= 3 || (q5 >= 2 && q4 >= 2)) { pkg = 'Scale'; reasoning.push('You have existing workflows but need consistency and governance across multiple teams. SMART Scale is built for this.'); }
+      else { pkg = 'Craft'; reasoning.push('You have workflows in place but they need proper design. SMART Craft is focused on rebuilding and optimising your processes to work the way they should.'); }
+    } else if (q1 === 3) {
+      pkg = 'Scale';
+      reasoning.push('Your priority is cross-team consistency, leadership visibility, and standardised governance. SMART Scale operates at that level.');
+    }
+
+    // Override nudges
+    if (pkg === 'Foundation' && q4 >= 3 && q5 >= 2) { pkg = 'Scale'; reasoning.push('The number of teams and level of cross-functional work points more toward Scale than Foundation.'); }
+    if (pkg === 'Craft' && q4 >= 3 && q5 >= 2) { pkg = 'Scale'; reasoning.push('The combination of multiple teams and regular cross-functional handoffs means Scale is a stronger fit than Craft.'); }
+
+    // Business type reasoning
+    const bizLabels = { client_delivery: 'client project and service delivery', internal_ops: 'internal operations and shared services', product_campaign: 'product and campaign work', regulated: 'regulated or compliance-driven processes', mixed: 'a mix of client-facing and internal work' };
+    if (q2) reasoning.push('Your organisation runs ' + (bizLabels[q2] || q2) + '. This shapes how workflows, templates, and field structures will be designed during the build.');
+    if (q2 === 'regulated') reasoning.push('Regulated or compliance-driven environments typically require more structured approval workflows and audit-ready field design. Both add to build complexity.');
+
+    // Work type reasoning
+    if (q6.includes('approvals') || q6.includes('sops')) reasoning.push('You flagged approvals or SOPs as part of your work. These require specific template structures and are factored into the Workflow Build scope.');
+    if (q6.includes('client_info')) reasoning.push('Using Asana to store client or product reference information adds a data architecture layer to the build that sits outside standard project workflows.');
+    if (q6.length >= 4) reasoning.push('You manage a wide range of work types. This is a meaningful complexity signal. The more diverse the work, the more thoughtful the structural design needs to be.');
+
+    // Pain point reasoning
+    if (q5 === 3 || q9.includes('handoffs')) reasoning.push('Broken handoffs are a flagged pain point. This sits squarely in the Workflow Build module and will be a key focus.');
+    if (q3 >= 3) reasoning.push('With 31 or more people involved, structure and adoption planning become more important. Both are addressed explicitly in this package.');
+    if (q11.includes('migration') || q9.includes('scattered')) reasoning.push('You flagged tools scattered across multiple places. SMART Migration can handle a structured move into Asana.');
+    if (q11.includes('ai')) reasoning.push('You flagged interest in AI. AI readiness requires a clean, governed system first. SMART AI becomes available once that foundation is in place.');
+    if (q9.includes('adoption') || q9.includes('inconsistency')) reasoning.push('Low adoption and inconsistent processes are common signs that the build needs to be paired with strong enablement. SMART Team and SMART Lead address this directly.');
+    if (q10.includes('sheets') || q10.includes('email')) reasoning.push('Your team is currently working across spreadsheets or email for task tracking. Consolidating into one place is a key early win Asana can deliver quickly.');
+
+    // DEPTH LOGIC
+    let depthScore = 0;
+    if (q3 >= 3) depthScore += 2; else if (q3 === 2) depthScore += 1;
+    if (q4 >= 3) depthScore += 2; else if (q4 === 2) depthScore += 1;
+    if (q5 >= 2) depthScore += 1; if (q5 === 3) depthScore += 1;
+    if (q7 >= 3) depthScore += 2; else if (q7 === 2) depthScore += 1;
+    if (q8 >= 3) depthScore += 2; else if (q8 === 2) depthScore += 1;
+    if (q11.includes('migration')) depthScore += 1;
+    if (q11.includes('dashboards')) depthScore += 1;
+    if (q9.includes('reporting')) depthScore += 1;
+    if (q9.includes('manual')) depthScore += 1;
+    if (q2 === 'regulated') depthScore += 1;
+    if (q6.length >= 4) depthScore += 1;
+    if (q6.includes('approvals') && q6.includes('sops')) depthScore += 1;
+
+    let depth = 'Sprint';
+    if (depthScore >= 8) depth = 'System';
+    else if (depthScore >= 3) depth = 'Core';
+
+    // DELIVERY MODE
+    let deliveryMode = '';
+    if (q12 === 'guided') deliveryMode = 'Guided Build: workshops and collaborative build sessions with your team. Best for adoption and knowledge transfer.';
+    else if (q12 === 'dfy') deliveryMode = 'Done-for-You Build: we build it offline and hand it over for review and sign-off. Lighter on your team\'s time.';
+    else if (q12 === 'mix') deliveryMode = 'Mixed approach: some sessions together, some built offline. We can structure this around your team\'s availability.';
+    else deliveryMode = 'We will recommend the best delivery mode based on your goals and availability once we have spoken.';
+
+    // MODULES
+    const modulesByPackage = {
+      Clarity: [{ name: 'Discovery & Roadmap', desc: 'The full diagnostic: health check, maturity review, pain-point mapping, quick-win identification, and a recommended package path.', tag: 'Standard' }],
+      Foundation: [
+        { name: 'Discovery & Roadmap', desc: 'Scoping and readiness review to establish priorities before the build begins.', tag: 'Standard' },
+        { name: 'Structure & Governance', desc: 'Your Asana hierarchy, naming conventions, permissions, and team standards. Built to last.', tag: 'Standard' },
+        { name: 'Workflow Build', desc: 'Your core processes designed, templated, and ready to use. Includes fields and intake where needed.', tag: 'Standard' },
+        { name: 'SMART Team', desc: 'Organisation-wide Asana training so your team can use the system confidently from day one.', tag: 'Standard' },
+        { name: 'SMART Lead', desc: 'Identifying and orienting your internal Asana owner: the person who keeps things on track after we leave.', tag: 'Standard' }
+      ],
+      Craft: [
+        { name: 'Discovery & Roadmap', desc: 'Readiness confirmation: your existing governance and structure are verified before the build begins.', tag: 'Readiness' },
+        { name: 'Workflow Build', desc: 'Full multi-workflow build: process mapping, templates, dependencies, handoffs, and testing across your key processes.', tag: 'Standard' },
+        { name: 'SMART Team', desc: 'Training tailored to how you actually work in the rebuilt system.', tag: 'Standard' },
+        { name: 'SMART Lead', desc: 'Targeted training for your internal Asana lead on the specific workflows just built.', tag: 'Standard' },
+        { name: 'SMART Automation', desc: 'Rules and automations to remove manual steps and trigger actions across your workflows.', tag: 'Standard' },
+        { name: 'SMART Visibility', desc: 'Workflow-level dashboards and reporting so the right people can see progress without chasing it.', tag: 'Standard' }
+      ],
+      Scale: [
+        { name: 'Discovery & Roadmap', desc: 'Readiness confirmation across all teams before the cross-team build begins.', tag: 'Readiness' },
+        { name: 'Structure & Governance', desc: 'Cross-team standards, permissions, and governance extended across the full organisation.', tag: 'Standard' },
+        { name: 'Workflow Build', desc: 'New or expanded processes for teams not yet operating at full capability.', tag: 'Standard' },
+        { name: 'SMART Team', desc: 'Asana training for the full organisation, including advanced content for power users and managers.', tag: 'Standard' },
+        { name: 'SMART Lead', desc: 'Cross-team governance: your internal leads own standards and drive adoption across departments.', tag: 'Standard' },
+        { name: 'SMART Automation', desc: 'Full automation layer across all key workflows.', tag: 'Standard' },
+        { name: 'SMART Visibility', desc: 'Portfolio and leadership-level reporting: full visibility across teams, projects, and workstreams.', tag: 'Standard' }
+      ],
+      AI: [
+        { name: 'Discovery & Roadmap', desc: 'AI readiness check: confirming your system is clean, governed, and ready for AI activation.', tag: 'Readiness' },
+        { name: 'SMART Features', desc: 'Configuration and activation of Asana\'s built-in AI capabilities on your live workflows.', tag: 'Standard' },
+        { name: 'AI Studio', desc: 'Custom AI workflows built in Asana Studio: automated, intelligent, and connected to your processes.', tag: 'Standard' },
+        { name: 'AI Teammates', desc: 'AI agents deployed to take on repeatable tasks inside your Asana environment.', tag: 'Standard' }
+      ]
+    };
+
+    const addOnsByPackage = {
+      Clarity: ['SMART Migration','SMART Support'],
+      Foundation: ['SMART Visibility','SMART Automation','SMART Migration','SMART Support'],
+      Craft: ['SMART Migration','SMART Support'],
+      Scale: ['SMART Support','SMART Migration'],
+      AI: ['SMART Automation','SMART Visibility','SMART Support']
+    };
+
+    const packagePromises = {
+      Clarity: 'Find the right starting point before you build.',
+      Foundation: 'The structure and workflows your team needs to work properly in Asana.',
+      Craft: 'Properly designed workflows built around how your team actually works.',
+      Scale: 'One consistent operating standard across every team, every workflow.',
+      AI: 'From a well-run system. To one that works with you.'
+    };
+
+    // ADD-ONS
+    const suggestedAddons = [];
+    const addonPool = addOnsByPackage[pkg] || [];
+    if (q11.includes('migration') && addonPool.includes('SMART Migration')) suggestedAddons.push({ name: 'SMART Migration', desc: 'Structured migration of your data, tasks, and projects from your current tool or spreadsheet into Asana.' });
+    if (q11.includes('support') && addonPool.includes('SMART Support')) suggestedAddons.push({ name: 'SMART Support', desc: 'Ongoing access to advice and support after the build is complete.' });
+    if (q11.includes('dashboards') && addonPool.includes('SMART Visibility') && pkg === 'Foundation') suggestedAddons.push({ name: 'SMART Visibility', desc: 'Basic dashboards and reporting to give leadership visibility into progress.' });
+    if (q11.includes('automation') && addonPool.includes('SMART Automation') && pkg === 'Foundation') suggestedAddons.push({ name: 'SMART Automation', desc: 'Targeted rules and automations to reduce manual work in your core workflows.' });
+
+    // RENDER
+    document.getElementById('res-package').innerHTML = pkg === 'AI' ? 'SMART <span>AI</span>' : 'SMART <span>' + pkg + '</span>';
+    document.getElementById('res-promise').textContent = packagePromises[pkg];
+    document.getElementById('res-chips').innerHTML =
+      '<div class="chip chip-coral">' + (pkg === 'AI' ? 'SMART AI' : 'SMART ' + pkg) + '</div>' +
+      '<div class="chip chip-outline">Depth: ' + depth + '</div>' +
+      (depthScore >= 8 ? '<div class="chip chip-outline">High complexity</div>' : '') +
+      (q11.includes('ai') && pkg !== 'AI' ? '<div class="chip chip-green">AI interest noted</div>' : '');
+
+    document.getElementById('res-reasoning').innerHTML = reasoning.map(r => '<div class="reasoning-item">' + r + '</div>').join('');
+
+    const mods = modulesByPackage[pkg] || [];
+    document.getElementById('res-modules').innerHTML = mods.map(m => {
+      const n = m.name.startsWith('SMART') ? '<span class="smart">SMART</span>' + m.name.slice(5) : m.name;
+      return '<div class="module-row"><div class="module-marker"></div><div class="opt-text"><div class="module-name">' + n + '</div><div class="module-desc">' + m.desc + '</div></div><div class="module-tag">' + m.tag + '</div></div>';
+    }).join('');
+
+    if (suggestedAddons.length > 0) {
+      document.getElementById('res-addons').innerHTML = suggestedAddons.map(a => {
+        const n = a.name.startsWith('SMART') ? '<span class="smart">SMART</span>' + a.name.slice(5) : a.name;
+        return '<div class="module-row"><div class="module-marker" style="background:#DDDBD8"></div><div class="opt-text"><div class="module-name">' + n + '</div><div class="module-desc">' + a.desc + '</div></div><div class="module-tag">Optional</div></div>';
+      }).join('');
+      document.getElementById('res-addons-card').style.display = 'block';
+    }
+
+    const depthData = {
+      Clarity:    { Sprint:{h:'4–6 hrs',d:'Focused discovery session and roadmap.'}, Core:{h:'8–12 hrs',d:'Full health check, maturity review, and roadmap.'}, System:{h:'15–20 hrs',d:'Deep review across all teams and workflows.'} },
+      Foundation: { Sprint:{h:'10–18 hrs',d:'Focused build on your highest-priority process and core structure.'}, Core:{h:'20–35 hrs',d:'Full structure, governance, and 1–2 workflows properly built.'}, System:{h:'36–60 hrs',d:'Comprehensive build across multiple workflows with full enablement.'} },
+      Craft:      { Sprint:{h:'12–20 hrs',d:'Targeted redesign of one key workflow.'}, Core:{h:'22–40 hrs',d:'Full rebuild of 2–3 workflows with automation and reporting.'}, System:{h:'42–70 hrs',d:'Deep multi-workflow rebuild with full testing and enablement.'} },
+      Scale:      { Sprint:{h:'20–30 hrs',d:'Priority cross-team alignment and governance rollout.'}, Core:{h:'32–55 hrs',d:'Full cross-team standardisation, reporting, and governance.'}, System:{h:'56–90 hrs',d:'Comprehensive operating model across all teams and workflows.'} },
+      AI:         { Sprint:{h:'8–14 hrs',d:'Targeted activation of Asana AI features on your highest-priority workflow.'}, Core:{h:'16–28 hrs',d:'Full AI feature configuration with Studio and Teammates.'}, System:{h:'30–50 hrs',d:'Comprehensive AI deployment across the full operating model.'} }
+    };
+
+    const pkgD = depthData[pkg];
+    document.getElementById('res-depth').innerHTML = ['Sprint','Core','System'].map(d => {
+      const isRec = d === depth;
+      return '<div class="depth-row"><div><div class="depth-name">' + d + '</div><div class="depth-hours">' + pkgD[d].h + '</div></div><div style="flex:1"><div class="depth-desc">' + pkgD[d].d + '</div>' + (isRec ? '<div style="margin-top:6px"><span class="recommended-badge">&#10003; Recommended</span></div>' : '') + '</div></div>';
+    }).join('');
+
+    document.getElementById('res-delivery').innerHTML = '<div class="reasoning-item">' + deliveryMode + '</div>';
+
+    // Work type and biz context
+    const bizLabel = { client_delivery:'Client project and service delivery', internal_ops:'Internal operations and shared services', product_campaign:'Product and campaign work', regulated:'Regulated or compliance-driven processes', mixed:'Mixed client-facing and internal work' };
+    const workTypeLabels = { timebound:'Time-bound projects', ongoing:'Ongoing operations', campaigns:'Campaigns and launches', intake:'Intake and requests', approvals:'Approvals and reviews', sops:'SOPs and documentation', client_info:'Client or product information' };
+    let wtHtml = '';
+    if (q2) wtHtml += '<div class="reasoning-item"><strong style="color:var(--black)">Business type:</strong>&nbsp;' + (bizLabel[q2] || q2) + '</div>';
+    if (q6.length > 0) wtHtml += '<div class="reasoning-item"><strong style="color:var(--black)">Work types:</strong>&nbsp;' + q6.map(t => workTypeLabels[t] || t).join(', ') + '</div>';
+    if (wtHtml) { document.getElementById('res-worktype').innerHTML = wtHtml; document.getElementById('res-worktype-card').style.display = 'block'; }
+
+    // Tools
+    const toolLabels = { slack:'Slack / Teams', sheets:'Spreadsheets (Excel / Google Sheets)', email:'Email for task tracking', monday:'Monday.com / Trello', jira:'Jira / Notion', crm:'CRM (Salesforce, HubSpot, etc.)', drive:'Google Drive / SharePoint', other:'Other tools' };
+    if (q10.length > 0) {
+      document.getElementById('res-tools').innerHTML = '<div style="display:flex;flex-wrap:wrap;margin:-3px">' + q10.map(t => '<span class="tool-tag">' + (toolLabels[t]||t) + '</span>').join('') + '</div>';
+      document.getElementById('res-tools-card').style.display = 'block';
+    }
+
+    // Open text
+    let openHtml = '';
+    if (successText.length > 0) openHtml += '<div class="result-open-text"><strong style="font-style:normal;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--grey-label);display:block;margin-bottom:6px;">Success looks like</strong>' + successText + '</div>';
+    if (problemText.length > 0) openHtml += '<div class="result-open-text"><strong style="font-style:normal;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--grey-label);display:block;margin-bottom:6px;">The main problem</strong>' + problemText + '</div>';
+    if (openHtml) { document.getElementById('res-open').innerHTML = openHtml; document.getElementById('res-open-card').style.display = 'block'; }
+
+    document.getElementById('form-panel').style.display = 'none';
+    document.getElementById('result-panel').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function restart() {
+    for (const k in answers) delete answers[k];
+    multiAnswers.q6=[]; multiAnswers.q9=[]; multiAnswers.q10=[]; multiAnswers.q11=[];
+    document.querySelectorAll('.opt').forEach(o => o.classList.remove('selected'));
+    document.getElementById('q13').value = '';
+    document.getElementById('q14').value = '';
+    document.getElementById('progress-fill').style.width = '0%';
+    document.getElementById('progress-label').textContent = '0 of ' + TOTAL_Q;
+    document.getElementById('submit-btn').disabled = true;
+    document.getElementById('submit-note').textContent = 'Please answer all questions before continuing.';
+    ['res-addons-card','res-open-card','res-tools-card','res-worktype-card'].forEach(id => document.getElementById(id).style.display = 'none');
+    document.getElementById('result-panel').style.display = 'none';
+    document.getElementById('form-panel').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  updateProgress();
+</script>
+</body>
+</html>
