@@ -1,19 +1,22 @@
-// SMART Advanced Consulting — Discovery Form Backend
+// SMART Advanced Consulting - Discovery Form Backend
 // Receives form submissions, sends email notification, creates Asana task
 // Hosted on Render as a Web Service (Node runtime, free tier)
+//
+// NOTE: Email is sent via the Resend HTTP API rather than SMTP.
+// Render blocks outbound traffic on SMTP ports (25, 465, 587) on free web
+// services, so a direct SMTP connection (e.g. via nodemailer) will always
+// time out on that tier. Resend sends over standard HTTPS (port 443),
+// which is not affected.
 
 const http = require('http');
 const https = require('https');
-const nodemailer = require('nodemailer');
 
 const PORT = process.env.PORT || 3000;
-const ASANA_TOKEN = process.env.ASANA_TOKEN;
-const ASANA_PROJECT_ID = process.env.ASANA_PROJECT_ID;
-const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL;
-const SMTP_HOST = process.env.SMTP_HOST;
-const SMTP_PORT = parseInt(process.env.SMTP_PORT) || 587;
-const SMTP_USER = process.env.SMTP_USER;
-const SMTP_PASS = process.env.SMTP_PASS;
+const ASANA_TOKEN = (process.env.ASANA_TOKEN || '').trim();
+const ASANA_PROJECT_ID = (process.env.ASANA_PROJECT_ID || '').trim();
+const NOTIFY_EMAIL = (process.env.NOTIFY_EMAIL || '').trim();
+const RESEND_API_KEY = (process.env.RESEND_API_KEY || '').trim();
+const FROM_EMAIL = (process.env.FROM_EMAIL || '').trim();
 
 // ── LABELS ──────────────────────────────────────────────────────────────────
 
@@ -116,7 +119,7 @@ function buildAgenda(data) {
   lines.push(`FIRST MEETING AGENDA`);
   lines.push(`Recommended package: ${pkg} (${depth} depth)`);
   lines.push(``);
-  lines.push(`1. OPEN — confirm understanding of their situation`);
+  lines.push(`1. OPEN - confirm understanding of their situation`);
   lines.push(`   Context from form: ${label(data.q1, Q1_LABELS)}`);
   lines.push(`   Business type: ${label(data.q2, Q2_LABELS)}`);
   lines.push(``);
@@ -168,19 +171,17 @@ function buildAgenda(data) {
   return lines.join('\n');
 }
 
-// ── EMAIL ────────────────────────────────────────────────────────────────────
+// ── EMAIL (via Resend HTTP API) ──────────────────────────────────────────────
 
-async function sendEmail(data) {
-  const transporter = nodemailer.createTransport({
-    host: SMTP_HOST,
-    port: SMTP_PORT,
-    secure: false,
-    auth: { user: SMTP_USER, pass: SMTP_PASS }
-  });
+function sendEmail(data) {
+  return new Promise((resolve, reject) => {
+    if (!RESEND_API_KEY) return reject(new Error('RESEND_API_KEY environment variable is not set'));
+    if (!FROM_EMAIL) return reject(new Error('FROM_EMAIL environment variable is not set'));
+    if (!NOTIFY_EMAIL) return reject(new Error('NOTIFY_EMAIL environment variable is not set'));
 
-  const subject = `New SMART Discovery Form: ${label(data.q2, Q2_LABELS)} — ${data.package || 'TBC'} ${data.depth || ''}`;
+    const subject = `New SMART Discovery Form: ${label(data.q2, Q2_LABELS)} - ${data.package || 'TBC'} ${data.depth || ''}`;
 
-  const body = `
+    const body = `
 New discovery form submission received.
 
 RECOMMENDATION
@@ -215,13 +216,41 @@ Main problem: ${data.problemText || '(not provided)'}
 
 ---
 An Asana task has been created with a first meeting agenda.
-  `.trim();
+    `.trim();
 
-  await transporter.sendMail({
-    from: SMTP_USER,
-    to: NOTIFY_EMAIL,
-    subject,
-    text: body
+    const payload = JSON.stringify({
+      from: FROM_EMAIL,
+      to: [NOTIFY_EMAIL],
+      subject,
+      text: body
+    });
+
+    const options = {
+      hostname: 'api.resend.com',
+      path: '/emails',
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${RESEND_API_KEY}`,
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(payload)
+      }
+    };
+
+    const req = https.request(options, (res) => {
+      let responseData = '';
+      res.on('data', chunk => { responseData += chunk; });
+      res.on('end', () => {
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          resolve(JSON.parse(responseData));
+        } else {
+          reject(new Error(`Resend API error ${res.statusCode}: ${responseData}`));
+        }
+      });
+    });
+
+    req.on('error', reject);
+    req.write(payload);
+    req.end();
   });
 }
 
@@ -229,6 +258,9 @@ An Asana task has been created with a first meeting agenda.
 
 function createAsanaTask(data) {
   return new Promise((resolve, reject) => {
+    if (!ASANA_TOKEN) return reject(new Error('ASANA_TOKEN environment variable is not set'));
+    if (!ASANA_PROJECT_ID) return reject(new Error('ASANA_PROJECT_ID environment variable is not set or is empty'));
+
     const agenda = buildAgenda(data);
     const taskName = `Discovery: ${label(data.q2, Q2_LABELS)} | SMART ${data.package || 'TBC'} ${data.depth || ''}`;
 
