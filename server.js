@@ -108,8 +108,6 @@ function label(value, labelMap) {
 // ── AGENDA BUILDER ───────────────────────────────────────────────────────────
 
 function buildAgenda(data) {
-  const pkg = data.package || 'TBC';
-  const depth = data.depth || 'TBC';
   const painPoints = (data.q9 || []).map(v => Q9_LABELS[v] || v);
   const workTypes = (data.q6 || []).map(v => Q6_LABELS[v] || v);
   const tools = (data.q10 || []).map(v => Q10_LABELS[v] || v);
@@ -117,7 +115,7 @@ function buildAgenda(data) {
 
   const lines = [];
   lines.push(`FIRST MEETING AGENDA`);
-  lines.push(`Recommended package: ${pkg} (${depth} depth)`);
+  lines.push(`Package recommendation: pending Asana Expert review`);
   lines.push(``);
   lines.push(`CLIENT DETAILS`);
   lines.push(`   Company: ${data.clientCompany || 'Not provided'}`);
@@ -149,11 +147,10 @@ function buildAgenda(data) {
   lines.push(`4. CURRENT STACK`);
   lines.push(`   Tools in use: ${tools.length > 0 ? tools.join(', ') : 'Not specified'}`);
   lines.push(``);
-  lines.push(`5. PRESENT RECOMMENDATION`);
-  lines.push(`   Package: SMART ${pkg}`);
-  lines.push(`   Depth: ${depth}`);
+  lines.push(`5. RECOMMENDATION STATUS`);
+  lines.push(`   Package and depth: to be determined via Asana Expert review of this submission before the call`);
   lines.push(`   Delivery mode preference: ${label(data.q12, Q12_LABELS)}`);
-  if (addOns.length > 0) lines.push(`   Add-ons flagged: ${addOns.join(', ')}`);
+  if (addOns.length > 0) lines.push(`   Add-ons flagged by client: ${addOns.join(', ')}`);
   lines.push(``);
   lines.push(`6. WHAT THEY SAID`);
   if (data.successText) lines.push(`   Success looks like: "${data.successText}"`);
@@ -172,7 +169,8 @@ function buildAgenda(data) {
   lines.push(`   - Who else from your team should be involved in the build or decisions?`);
   lines.push(``);
   lines.push(`8. NEXT STEPS`);
-  lines.push(`   - Confirm package and scope`);
+  lines.push(`   - Review submission via Asana Expert to shape a package and depth recommendation`);
+  lines.push(`   - Present recommendation and confirm scope`);
   lines.push(`   - Agree on engagement start date`);
   lines.push(`   - Send proposal / SOW`);
 
@@ -188,9 +186,8 @@ Company: ${data.clientCompany || 'Not provided'}
 Contact: ${data.clientContact || 'Not provided'}
 Email: ${data.clientEmail || 'Not provided'}${data.clientWebsite ? `\nWebsite: ${data.clientWebsite}` : ''}${data.clientAddress ? `\nAddress: ${data.clientAddress}` : ''}${data.clientCountry ? `\nCountry: ${data.clientCountry}` : ''}
 
-RECOMMENDATION
-Package: SMART ${data.package || 'TBC'}
-Depth: ${data.depth || 'TBC'}
+PACKAGE RECOMMENDATION
+Pending review. This submission is to be reviewed (including via Asana Expert in ChatGPT) to shape a package and depth recommendation ahead of the first meeting.
 Delivery preference: ${label(data.q12, Q12_LABELS)}
 
 ABOUT THE CLIENT
@@ -237,7 +234,7 @@ function sendEmail(data) {
     if (!NOTIFY_EMAIL) return reject(new Error('NOTIFY_EMAIL environment variable is not set'));
 
     const companyPart = data.clientCompany ? `${data.clientCompany} - ` : '';
-    const subject = `New SMART Discovery Form: ${companyPart}${label(data.q2, Q2_LABELS)} - ${data.package || 'TBC'} ${data.depth || ''}`;
+    const subject = `New SMART Discovery Form: ${companyPart}${label(data.q2, Q2_LABELS)}`;
 
     const body = `
 New discovery form submission received.
@@ -293,7 +290,7 @@ function createAsanaTask(data) {
 
     const agenda = buildAgenda(data);
     const companyPart = data.clientCompany ? `${data.clientCompany} | ` : '';
-    const taskName = `Discovery: ${companyPart}${label(data.q2, Q2_LABELS)} | SMART ${data.package || 'TBC'} ${data.depth || ''}`;
+    const taskName = `Discovery: ${companyPart}${label(data.q2, Q2_LABELS)} (package pending review)`;
 
     const body = JSON.stringify({
       data: {
@@ -346,7 +343,7 @@ function buildPdfBuffer(data) {
     doc.fontSize(18).text('SMART Discovery Form Submission', { align: 'left' });
     doc.moveDown(0.3);
     doc.fontSize(10).fillColor('#666666')
-      .text(`Recommended: SMART ${data.package || 'TBC'} (${data.depth || 'TBC'} depth)`);
+      .text(data.clientCompany ? `${data.clientCompany} - package recommendation pending review` : 'Package recommendation pending review');
     doc.moveDown();
     doc.fillColor('#000000').fontSize(10).text(buildSummaryText(data));
 
@@ -414,18 +411,10 @@ const server = http.createServer(async (req, res) => {
         const asanaWithAttachment = (async () => {
           const task = await createAsanaTask(data);
           try {
-            let pdfBuffer;
-            let source;
-            if (data.pdfBase64) {
-              pdfBuffer = Buffer.from(data.pdfBase64, 'base64');
-              source = 'client-rendered snapshot';
-            } else {
-              pdfBuffer = await buildPdfBuffer(data);
-              source = 'server-generated fallback';
-            }
-            const filename = `SMART-Discovery-${safeFileSlug(data.package)}-${safeFileSlug(label(data.q2, Q2_LABELS))}.pdf`;
+            const pdfBuffer = await buildPdfBuffer(data);
+            const filename = `SMART-Discovery-${safeFileSlug(data.clientCompany)}-${safeFileSlug(label(data.q2, Q2_LABELS))}.pdf`;
             await uploadAsanaAttachment(task.data.gid, pdfBuffer, filename);
-            console.log(`PDF attachment success (${source})`);
+            console.log('PDF attachment success');
           } catch (attachErr) {
             console.error('PDF attachment failed:', attachErr.message);
           }

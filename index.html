@@ -107,7 +107,6 @@
     .options-grid.two-col { grid-template-columns: 1fr; }
   }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
 <div class="wrapper">
@@ -118,7 +117,7 @@
     <div class="header">
       <div class="header-meta"><div class="header-dot"></div><div class="header-brand">SMART Advanced Consulting</div></div>
       <h1>Package Fit<br><span>Discovery</span></h1>
-      <p class="header-sub">A few questions to help us recommend the right starting point for your Asana engagement. No homework. This takes around 5 minutes.</p>
+      <p class="header-sub">A few questions to help us prepare for your Asana engagement. No homework. This takes around 5 minutes.</p>
       <div class="header-note">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#A6A6A6" stroke-width="1.5"/><path d="M7 6v4M7 4.5v.5" stroke="#A6A6A6" stroke-width="1.5" stroke-linecap="round"/></svg>
         Your answers are used only to shape a package recommendation. Nothing is binding.
@@ -356,7 +355,7 @@
 
     <div class="submit-wrap">
       <button class="btn-submit" onclick="generateRecommendation()" id="submit-btn" disabled>
-        Get my recommendation
+        Submit my responses
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
       <div class="submit-note" id="submit-note">Please answer all questions before continuing.</div>
@@ -367,21 +366,12 @@
   <!-- RESULT PANEL -->
   <div id="result-panel">
     <div class="result-header">
-      <div class="result-label">Your SMART Package Recommendation</div>
-      <div class="result-package" id="res-package"></div>
-      <div class="result-promise" id="res-promise"></div>
-      <div class="result-chips" id="res-chips"></div>
+      <div class="result-label">Thanks, your responses have been received</div>
+      <div class="result-promise">SMART Advanced Consulting will review your answers and follow up with a tailored recommendation ahead of your first meeting.</div>
     </div>
-    <div class="result-card" id="res-client-details-card" style="display:none"><div class="result-section-title">Client details</div><div id="res-client-details"></div></div>
-    <div class="result-card"><div class="result-section-title">Why this recommendation</div><div id="res-reasoning"></div></div>
-    <div class="result-card"><div class="result-section-title">Standard modules included</div><div id="res-modules"></div></div>
-    <div class="result-card" id="res-addons-card" style="display:none"><div class="result-section-title">Relevant add-ons to consider</div><div id="res-addons"></div></div>
-    <div class="result-card"><div class="result-section-title">Recommended depth</div><div id="res-depth"></div></div>
-    <div class="result-card"><div class="result-section-title">Delivery mode</div><div id="res-delivery"></div></div>
-    <div class="result-card" id="res-worktype-card" style="display:none"><div class="result-section-title">Work types and business context</div><div id="res-worktype"></div></div>
-    <div class="result-card" id="res-tools-card" style="display:none"><div class="result-section-title">Tools in your current stack</div><div id="res-tools"></div></div>
-    <div class="result-card" id="res-open-card" style="display:none"><div class="result-section-title">What you told us</div><div id="res-open"></div></div>
-    <div class="submit-wrap" id="pdf-exclude-wrap">
+    <div class="result-card" id="res-client-details-card" style="display:none"><div class="result-section-title">Your details</div><div id="res-client-details"></div></div>
+    <div class="result-card" id="res-summary-card" style="display:none"><div class="result-section-title">What you told us</div><div id="res-summary"></div></div>
+    <div class="submit-wrap">
       <button class="btn-restart" onclick="restart()">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7a5 5 0 1 0 1.5-3.5L2 5" stroke="#252A32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 2v3h3" stroke="#252A32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Start again
@@ -460,142 +450,9 @@
     const successText = document.getElementById('q13').value.trim();
     const problemText = document.getElementById('q14').value.trim();
 
-    // PACKAGE LOGIC
-    let pkg = 'Foundation';
-    let reasoning = [];
-
-    if (q1 === 9) {
-      pkg = 'AI';
-      reasoning.push('You have a stable, governed Asana system in place and are ready to activate AI features. SMART AI is designed specifically for this stage.');
-    } else if (q1 === -1 || q1 === 1) {
-      pkg = 'Clarity';
-      reasoning.push('Before committing to a build, a diagnostic session will identify where the real issues are, rank priorities, and map the right next step. SMART Clarity removes the guesswork.');
-    } else if (q1 === 0) {
-      pkg = 'Foundation';
-      reasoning.push('You are starting from scratch or have limited structure in place. SMART Foundation builds the core system from the ground up.');
-    } else if (q1 === 2) {
-      if (q4 >= 3 || (q5 >= 2 && q4 >= 2)) { pkg = 'Scale'; reasoning.push('You have existing workflows but need consistency and governance across multiple teams. SMART Scale is built for this.'); }
-      else { pkg = 'Craft'; reasoning.push('You have workflows in place but they need proper design. SMART Craft is focused on rebuilding and optimising your processes to work the way they should.'); }
-    } else if (q1 === 3) {
-      pkg = 'Scale';
-      reasoning.push('Your priority is cross-team consistency, leadership visibility, and standardised governance. SMART Scale operates at that level.');
-    }
-
-    // Override nudges
-    if (pkg === 'Foundation' && q4 >= 3 && q5 >= 2) { pkg = 'Scale'; reasoning.push('The number of teams and level of cross-functional work points more toward Scale than Foundation.'); }
-    if (pkg === 'Craft' && q4 >= 3 && q5 >= 2) { pkg = 'Scale'; reasoning.push('The combination of multiple teams and regular cross-functional handoffs means Scale is a stronger fit than Craft.'); }
-
-    // Business type reasoning
-    const bizLabels = { client_delivery: 'client project and service delivery', internal_ops: 'internal operations and shared services', product_campaign: 'product and campaign work', regulated: 'regulated or compliance-driven processes', mixed: 'a mix of client-facing and internal work' };
-    if (q2) reasoning.push('Your organisation runs ' + (bizLabels[q2] || q2) + '. This shapes how workflows, templates, and field structures will be designed during the build.');
-    if (q2 === 'regulated') reasoning.push('Regulated or compliance-driven environments typically require more structured approval workflows and audit-ready field design. Both add to build complexity.');
-
-    // Work type reasoning
-    if (q6.includes('approvals') || q6.includes('sops')) reasoning.push('You flagged approvals or SOPs as part of your work. These require specific template structures and are factored into the Workflow Build scope.');
-    if (q6.includes('client_info')) reasoning.push('Using Asana to store client or product reference information adds a data architecture layer to the build that sits outside standard project workflows.');
-    if (q6.length >= 4) reasoning.push('You manage a wide range of work types. This is a meaningful complexity signal. The more diverse the work, the more thoughtful the structural design needs to be.');
-
-    // Pain point reasoning
-    if (q5 === 3 || q9.includes('handoffs')) reasoning.push('Broken handoffs are a flagged pain point. This sits squarely in the Workflow Build module and will be a key focus.');
-    if (q3 >= 3) reasoning.push('With 31 or more people involved, structure and adoption planning become more important. Both are addressed explicitly in this package.');
-    if (q11.includes('migration') || q9.includes('scattered')) reasoning.push('You flagged tools scattered across multiple places. SMART Migration can handle a structured move into Asana.');
-    if (q11.includes('ai')) reasoning.push('You flagged interest in AI. AI readiness requires a clean, governed system first. SMART AI becomes available once that foundation is in place.');
-    if (q9.includes('adoption') || q9.includes('inconsistency')) reasoning.push('Low adoption and inconsistent processes are common signs that the build needs to be paired with strong enablement. SMART Team and SMART Lead address this directly.');
-    if (q10.includes('sheets') || q10.includes('email')) reasoning.push('Your team is currently working across spreadsheets or email for task tracking. Consolidating into one place is a key early win Asana can deliver quickly.');
-
-    // DEPTH LOGIC
-    let depthScore = 0;
-    if (q3 >= 3) depthScore += 2; else if (q3 === 2) depthScore += 1;
-    if (q4 >= 3) depthScore += 2; else if (q4 === 2) depthScore += 1;
-    if (q5 >= 2) depthScore += 1; if (q5 === 3) depthScore += 1;
-    if (q7 >= 3) depthScore += 2; else if (q7 === 2) depthScore += 1;
-    if (q8 >= 3) depthScore += 2; else if (q8 === 2) depthScore += 1;
-    if (q11.includes('migration')) depthScore += 1;
-    if (q11.includes('dashboards')) depthScore += 1;
-    if (q9.includes('reporting')) depthScore += 1;
-    if (q9.includes('manual')) depthScore += 1;
-    if (q2 === 'regulated') depthScore += 1;
-    if (q6.length >= 4) depthScore += 1;
-    if (q6.includes('approvals') && q6.includes('sops')) depthScore += 1;
-
-    let depth = 'Sprint';
-    if (depthScore >= 8) depth = 'System';
-    else if (depthScore >= 3) depth = 'Core';
-
-    // DELIVERY MODE
-    let deliveryMode = '';
-    if (q12 === 'guided') deliveryMode = 'Guided Build: workshops and collaborative build sessions with your team. Best for adoption and knowledge transfer.';
-    else if (q12 === 'dfy') deliveryMode = 'Done-for-You Build: we build it offline and hand it over for review and sign-off. Lighter on your team\'s time.';
-    else if (q12 === 'mix') deliveryMode = 'Mixed approach: some sessions together, some built offline. We can structure this around your team\'s availability.';
-    else deliveryMode = 'We will recommend the best delivery mode based on your goals and availability once we have spoken.';
-
-    // MODULES
-    const modulesByPackage = {
-      Clarity: [{ name: 'Discovery & Roadmap', desc: 'The full diagnostic: health check, maturity review, pain-point mapping, quick-win identification, and a recommended package path.', tag: 'Standard' }],
-      Foundation: [
-        { name: 'Discovery & Roadmap', desc: 'Scoping and readiness review to establish priorities before the build begins.', tag: 'Standard' },
-        { name: 'Structure & Governance', desc: 'Your Asana hierarchy, naming conventions, permissions, and team standards. Built to last.', tag: 'Standard' },
-        { name: 'Workflow Build', desc: 'Your core processes designed, templated, and ready to use. Includes fields and intake where needed.', tag: 'Standard' },
-        { name: 'SMART Team', desc: 'Organisation-wide Asana training so your team can use the system confidently from day one.', tag: 'Standard' },
-        { name: 'SMART Lead', desc: 'Identifying and orienting your internal Asana owner: the person who keeps things on track after we leave.', tag: 'Standard' }
-      ],
-      Craft: [
-        { name: 'Discovery & Roadmap', desc: 'Readiness confirmation: your existing governance and structure are verified before the build begins.', tag: 'Readiness' },
-        { name: 'Workflow Build', desc: 'Full multi-workflow build: process mapping, templates, dependencies, handoffs, and testing across your key processes.', tag: 'Standard' },
-        { name: 'SMART Team', desc: 'Training tailored to how you actually work in the rebuilt system.', tag: 'Standard' },
-        { name: 'SMART Lead', desc: 'Targeted training for your internal Asana lead on the specific workflows just built.', tag: 'Standard' },
-        { name: 'SMART Automation', desc: 'Rules and automations to remove manual steps and trigger actions across your workflows.', tag: 'Standard' },
-        { name: 'SMART Visibility', desc: 'Workflow-level dashboards and reporting so the right people can see progress without chasing it.', tag: 'Standard' }
-      ],
-      Scale: [
-        { name: 'Discovery & Roadmap', desc: 'Readiness confirmation across all teams before the cross-team build begins.', tag: 'Readiness' },
-        { name: 'Structure & Governance', desc: 'Cross-team standards, permissions, and governance extended across the full organisation.', tag: 'Standard' },
-        { name: 'Workflow Build', desc: 'New or expanded processes for teams not yet operating at full capability.', tag: 'Standard' },
-        { name: 'SMART Team', desc: 'Asana training for the full organisation, including advanced content for power users and managers.', tag: 'Standard' },
-        { name: 'SMART Lead', desc: 'Cross-team governance: your internal leads own standards and drive adoption across departments.', tag: 'Standard' },
-        { name: 'SMART Automation', desc: 'Full automation layer across all key workflows.', tag: 'Standard' },
-        { name: 'SMART Visibility', desc: 'Portfolio and leadership-level reporting: full visibility across teams, projects, and workstreams.', tag: 'Standard' }
-      ],
-      AI: [
-        { name: 'Discovery & Roadmap', desc: 'AI readiness check: confirming your system is clean, governed, and ready for AI activation.', tag: 'Readiness' },
-        { name: 'SMART Features', desc: 'Configuration and activation of Asana\'s built-in AI capabilities on your live workflows.', tag: 'Standard' },
-        { name: 'AI Studio', desc: 'Custom AI workflows built in Asana Studio: automated, intelligent, and connected to your processes.', tag: 'Standard' },
-        { name: 'AI Teammates', desc: 'AI agents deployed to take on repeatable tasks inside your Asana environment.', tag: 'Standard' }
-      ]
-    };
-
-    const addOnsByPackage = {
-      Clarity: ['SMART Migration','SMART Support'],
-      Foundation: ['SMART Visibility','SMART Automation','SMART Migration','SMART Support'],
-      Craft: ['SMART Migration','SMART Support'],
-      Scale: ['SMART Support','SMART Migration'],
-      AI: ['SMART Automation','SMART Visibility','SMART Support']
-    };
-
-    const packagePromises = {
-      Clarity: 'Find the right starting point before you build.',
-      Foundation: 'The structure and workflows your team needs to work properly in Asana.',
-      Craft: 'Properly designed workflows built around how your team actually works.',
-      Scale: 'One consistent operating standard across every team, every workflow.',
-      AI: 'From a well-run system. To one that works with you.'
-    };
-
-    // ADD-ONS
-    const suggestedAddons = [];
-    const addonPool = addOnsByPackage[pkg] || [];
-    if (q11.includes('migration') && addonPool.includes('SMART Migration')) suggestedAddons.push({ name: 'SMART Migration', desc: 'Structured migration of your data, tasks, and projects from your current tool or spreadsheet into Asana.' });
-    if (q11.includes('support') && addonPool.includes('SMART Support')) suggestedAddons.push({ name: 'SMART Support', desc: 'Ongoing access to advice and support after the build is complete.' });
-    if (q11.includes('dashboards') && addonPool.includes('SMART Visibility') && pkg === 'Foundation') suggestedAddons.push({ name: 'SMART Visibility', desc: 'Basic dashboards and reporting to give leadership visibility into progress.' });
-    if (q11.includes('automation') && addonPool.includes('SMART Automation') && pkg === 'Foundation') suggestedAddons.push({ name: 'SMART Automation', desc: 'Targeted rules and automations to reduce manual work in your core workflows.' });
-
-    // RENDER
-    document.getElementById('res-package').innerHTML = pkg === 'AI' ? 'SMART <span>AI</span>' : 'SMART <span>' + pkg + '</span>';
-    document.getElementById('res-promise').textContent = packagePromises[pkg];
-    document.getElementById('res-chips').innerHTML =
-      '<div class="chip chip-coral">' + (pkg === 'AI' ? 'SMART AI' : 'SMART ' + pkg) + '</div>' +
-      '<div class="chip chip-outline">Depth: ' + depth + '</div>' +
-      (depthScore >= 8 ? '<div class="chip chip-outline">High complexity</div>' : '') +
-      (q11.includes('ai') && pkg !== 'AI' ? '<div class="chip chip-green">AI interest noted</div>' : '');
+    // No package or depth is calculated on the client. Responses are reviewed
+    // by SMART Advanced Consulting (with Asana Expert support) ahead of the
+    // first meeting, and the recommendation is given there.
 
     let clientDetailsHtml = '';
     if (clientCompany) clientDetailsHtml += '<div class="reasoning-item"><strong style="color:var(--black)">Company:</strong>&nbsp;' + clientCompany + '</div>';
@@ -609,70 +466,24 @@
       document.getElementById('res-client-details-card').style.display = 'block';
     }
 
-    document.getElementById('res-reasoning').innerHTML = reasoning.map(r => '<div class="reasoning-item">' + r + '</div>').join('');
-
-    const mods = modulesByPackage[pkg] || [];
-    document.getElementById('res-modules').innerHTML = mods.map(m => {
-      const n = m.name.startsWith('SMART') ? '<span class="smart">SMART</span>' + m.name.slice(5) : m.name;
-      return '<div class="module-row"><div class="module-marker"></div><div class="opt-text"><div class="module-name">' + n + '</div><div class="module-desc">' + m.desc + '</div></div><div class="module-tag">' + m.tag + '</div></div>';
-    }).join('');
-
-    if (suggestedAddons.length > 0) {
-      document.getElementById('res-addons').innerHTML = suggestedAddons.map(a => {
-        const n = a.name.startsWith('SMART') ? '<span class="smart">SMART</span>' + a.name.slice(5) : a.name;
-        return '<div class="module-row"><div class="module-marker" style="background:#DDDBD8"></div><div class="opt-text"><div class="module-name">' + n + '</div><div class="module-desc">' + a.desc + '</div></div><div class="module-tag">Optional</div></div>';
-      }).join('');
-      document.getElementById('res-addons-card').style.display = 'block';
-    }
-
-    const depthData = {
-      Clarity:    { Sprint:{h:'4–6 hrs',d:'Focused discovery session and roadmap.'}, Core:{h:'8–12 hrs',d:'Full health check, maturity review, and roadmap.'}, System:{h:'15–20 hrs',d:'Deep review across all teams and workflows.'} },
-      Foundation: { Sprint:{h:'10–18 hrs',d:'Focused build on your highest-priority process and core structure.'}, Core:{h:'20–35 hrs',d:'Full structure, governance, and 1–2 workflows properly built.'}, System:{h:'36–60 hrs',d:'Comprehensive build across multiple workflows with full enablement.'} },
-      Craft:      { Sprint:{h:'12–20 hrs',d:'Targeted redesign of one key workflow.'}, Core:{h:'22–40 hrs',d:'Full rebuild of 2–3 workflows with automation and reporting.'}, System:{h:'42–70 hrs',d:'Deep multi-workflow rebuild with full testing and enablement.'} },
-      Scale:      { Sprint:{h:'20–30 hrs',d:'Priority cross-team alignment and governance rollout.'}, Core:{h:'32–55 hrs',d:'Full cross-team standardisation, reporting, and governance.'}, System:{h:'56–90 hrs',d:'Comprehensive operating model across all teams and workflows.'} },
-      AI:         { Sprint:{h:'8–14 hrs',d:'Targeted activation of Asana AI features on your highest-priority workflow.'}, Core:{h:'16–28 hrs',d:'Full AI feature configuration with Studio and Teammates.'}, System:{h:'30–50 hrs',d:'Comprehensive AI deployment across the full operating model.'} }
-    };
-
-    const pkgD = depthData[pkg];
-    document.getElementById('res-depth').innerHTML = ['Sprint','Core','System'].map(d => {
-      const isRec = d === depth;
-      return '<div class="depth-row"><div><div class="depth-name">' + d + '</div><div class="depth-hours">' + pkgD[d].h + '</div></div><div style="flex:1"><div class="depth-desc">' + pkgD[d].d + '</div>' + (isRec ? '<div style="margin-top:6px"><span class="recommended-badge">&#10003; Recommended</span></div>' : '') + '</div></div>';
-    }).join('');
-
-    document.getElementById('res-delivery').innerHTML = '<div class="reasoning-item">' + deliveryMode + '</div>';
-
-    // Work type and biz context
     const bizLabel = { client_delivery:'Client project and service delivery', internal_ops:'Internal operations and shared services', product_campaign:'Product and campaign work', regulated:'Regulated or compliance-driven processes', mixed:'Mixed client-facing and internal work' };
-    const workTypeLabels = { timebound:'Time-bound projects', ongoing:'Ongoing operations', campaigns:'Campaigns and launches', intake:'Intake and requests', approvals:'Approvals and reviews', sops:'SOPs and documentation', client_info:'Client or product information' };
-    let wtHtml = '';
-    if (q2) wtHtml += '<div class="reasoning-item"><strong style="color:var(--black)">Business type:</strong>&nbsp;' + (bizLabel[q2] || q2) + '</div>';
-    if (q6.length > 0) wtHtml += '<div class="reasoning-item"><strong style="color:var(--black)">Work types:</strong>&nbsp;' + q6.map(t => workTypeLabels[t] || t).join(', ') + '</div>';
-    if (wtHtml) { document.getElementById('res-worktype').innerHTML = wtHtml; document.getElementById('res-worktype-card').style.display = 'block'; }
-
-    // Tools
-    const toolLabels = { slack:'Slack / Teams', sheets:'Spreadsheets (Excel / Google Sheets)', email:'Email for task tracking', monday:'Monday.com / Trello', jira:'Jira / Notion', crm:'CRM (Salesforce, HubSpot, etc.)', drive:'Google Drive / SharePoint', other:'Other tools' };
-    if (q10.length > 0) {
-      document.getElementById('res-tools').innerHTML = '<div style="display:flex;flex-wrap:wrap;margin:-3px">' + q10.map(t => '<span class="tool-tag">' + (toolLabels[t]||t) + '</span>').join('') + '</div>';
-      document.getElementById('res-tools-card').style.display = 'block';
+    let summaryHtml = '';
+    if (q2) summaryHtml += '<div class="reasoning-item"><strong style="color:var(--black)">Business type:</strong>&nbsp;' + (bizLabel[q2] || q2) + '</div>';
+    if (successText) summaryHtml += '<div class="reasoning-item"><strong style="color:var(--black)">Success looks like:</strong>&nbsp;' + successText + '</div>';
+    if (problemText) summaryHtml += '<div class="reasoning-item"><strong style="color:var(--black)">Main problem:</strong>&nbsp;' + problemText + '</div>';
+    if (summaryHtml) {
+      document.getElementById('res-summary').innerHTML = summaryHtml;
+      document.getElementById('res-summary-card').style.display = 'block';
     }
-
-    // Open text
-    let openHtml = '';
-    if (successText.length > 0) openHtml += '<div class="result-open-text"><strong style="font-style:normal;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--grey-label);display:block;margin-bottom:6px;">Success looks like</strong>' + successText + '</div>';
-    if (problemText.length > 0) openHtml += '<div class="result-open-text"><strong style="font-style:normal;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--grey-label);display:block;margin-bottom:6px;">The main problem</strong>' + problemText + '</div>';
-    if (openHtml) { document.getElementById('res-open').innerHTML = openHtml; document.getElementById('res-open-card').style.display = 'block'; }
 
     document.getElementById('form-panel').style.display = 'none';
     document.getElementById('result-panel').style.display = 'block';
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    // Silently capture the rendered result panel as a PDF (preserving the exact
-    // on-screen branding and layout), then send it along with the answers to
-    // the backend for email and Asana task creation. None of this affects what
-    // the client sees on screen.
+    // Silently send the completed answers to the backend. The backend builds
+    // the PDF from this data server-side, and creates the Asana task and
+    // email notification. None of this affects what the client sees on screen.
     const submissionPayload = {
-      package: pkg,
-      depth: depth,
       clientCompany: clientCompany,
       clientContact: clientContact,
       clientEmail: clientEmail,
@@ -685,49 +496,11 @@
       problemText: problemText
     };
 
-    function submitToBackend(pdfBase64) {
-      if (pdfBase64) submissionPayload.pdfBase64 = pdfBase64;
-      fetch(BACKEND_URL + '/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(submissionPayload)
-      }).catch(err => console.error('Submission to backend failed:', err));
-    }
-
-    setTimeout(() => {
-      const restartWrap = document.getElementById('pdf-exclude-wrap');
-      const resultElement = document.getElementById('result-panel');
-      const previousDisplay = restartWrap.style.display;
-      restartWrap.style.display = 'none';
-
-      const pdfOptions = {
-        margin: [0.4, 0.4],
-        filename: 'discovery-recommendation.pdf',
-        image: { type: 'jpeg', quality: 0.95 },
-        html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
-        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-      };
-
-      if (typeof html2pdf === 'undefined') {
-        restartWrap.style.display = previousDisplay;
-        submitToBackend(null);
-        return;
-      }
-
-      html2pdf().set(pdfOptions).from(resultElement).outputPdf('blob')
-        .then(pdfBlob => {
-          restartWrap.style.display = previousDisplay;
-          const reader = new FileReader();
-          reader.onloadend = () => submitToBackend(reader.result.split(',')[1]);
-          reader.onerror = () => submitToBackend(null);
-          reader.readAsDataURL(pdfBlob);
-        })
-        .catch(err => {
-          console.error('PDF capture failed, submitting without PDF snapshot:', err);
-          restartWrap.style.display = previousDisplay;
-          submitToBackend(null);
-        });
-    }, 100);
+    fetch(BACKEND_URL + '/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(submissionPayload)
+    }).catch(err => console.error('Submission to backend failed:', err));
   }
 
   function restart() {
@@ -741,7 +514,7 @@
     document.getElementById('progress-label').textContent = '0 of ' + TOTAL_Q;
     document.getElementById('submit-btn').disabled = true;
     document.getElementById('submit-note').textContent = 'Please answer all questions before continuing.';
-    ['res-addons-card','res-open-card','res-tools-card','res-worktype-card','res-client-details-card'].forEach(id => document.getElementById(id).style.display = 'none');
+    ['res-client-details-card','res-summary-card'].forEach(id => document.getElementById(id).style.display = 'none');
     document.getElementById('result-panel').style.display = 'none';
     document.getElementById('form-panel').style.display = 'block';
     window.scrollTo({ top: 0, behavior: 'smooth' });
