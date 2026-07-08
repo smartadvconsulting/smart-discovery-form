@@ -171,19 +171,10 @@ function buildAgenda(data) {
   return lines.join('\n');
 }
 
-// ── EMAIL (via Resend HTTP API) ──────────────────────────────────────────────
+// ── SUBMISSION SUMMARY (shared by email body and PDF) ────────────────────────
 
-function sendEmail(data) {
-  return new Promise((resolve, reject) => {
-    if (!RESEND_API_KEY) return reject(new Error('RESEND_API_KEY environment variable is not set'));
-    if (!FROM_EMAIL) return reject(new Error('FROM_EMAIL environment variable is not set'));
-    if (!NOTIFY_EMAIL) return reject(new Error('NOTIFY_EMAIL environment variable is not set'));
-
-    const subject = `New SMART Discovery Form: ${label(data.q2, Q2_LABELS)} - ${data.package || 'TBC'} ${data.depth || ''}`;
-
-    const body = `
-New discovery form submission received.
-
+function buildSummaryText(data) {
+  return `
 RECOMMENDATION
 Package: SMART ${data.package || 'TBC'}
 Depth: ${data.depth || 'TBC'}
@@ -213,9 +204,34 @@ ${labelMulti(data.q11, Q11_LABELS)}
 WHAT THEY SAID
 Success looks like: ${data.successText || '(not provided)'}
 Main problem: ${data.problemText || '(not provided)'}
+  `.trim();
+}
+
+function safeFileSlug(text) {
+  return String(text || 'submission')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
+    .slice(0, 60);
+}
+
+// ── EMAIL (via Resend HTTP API) ──────────────────────────────────────────────
+
+function sendEmail(data) {
+  return new Promise((resolve, reject) => {
+    if (!RESEND_API_KEY) return reject(new Error('RESEND_API_KEY environment variable is not set'));
+    if (!FROM_EMAIL) return reject(new Error('FROM_EMAIL environment variable is not set'));
+    if (!NOTIFY_EMAIL) return reject(new Error('NOTIFY_EMAIL environment variable is not set'));
+
+    const subject = `New SMART Discovery Form: ${label(data.q2, Q2_LABELS)} - ${data.package || 'TBC'} ${data.depth || ''}`;
+
+    const body = `
+New discovery form submission received.
+
+${buildSummaryText(data)}
 
 ---
-An Asana task has been created with a first meeting agenda.
+An Asana task has been created with a first meeting agenda. A PDF copy of this submission is attached to that task.
     `.trim();
 
     const payload = JSON.stringify({
@@ -301,6 +317,61 @@ function createAsanaTask(data) {
   });
 }
 
+// ── PDF SUMMARY ──────────────────────────────────────────────────────────────
+
+function buildPdfBuffer(data) {
+  const PDFDocument = require('pdfkit');
+  return new Promise((resolve, reject) => {
+    const doc = new PDFDocument({ margin: 50 });
+    const chunks = [];
+    doc.on('data', chunk => chunks.push(chunk));
+    doc.on('end', () => resolve(Buffer.concat(chunks)));
+    doc.on('error', reject);
+
+    doc.fontSize(18).text('SMART Discovery Form Submission', { align: 'left' });
+    doc.moveDown(0.3);
+    doc.fontSize(10).fillColor('#666666')
+      .text(`Recommended: SMART ${data.package || 'TBC'} (${data.depth || 'TBC'} depth)`);
+    doc.moveDown();
+    doc.fillColor('#000000').fontSize(10).text(buildSummaryText(data));
+
+    doc.end();
+  });
+}
+
+// ── ASANA ATTACHMENT UPLOAD ──────────────────────────────────────────────────
+
+function uploadAsanaAttachment(taskGid, pdfBuffer, filename) {
+  const FormData = require('form-data');
+  return new Promise((resolve, reject) => {
+    const form = new FormData();
+    form.append('file', pdfBuffer, { filename, contentType: 'application/pdf' });
+
+    const headers = form.getHeaders();
+    headers['Authorization'] = `Bearer ${ASANA_TOKEN}`;
+
+    const req = https.request({
+      hostname: 'app.asana.com',
+      path: `/api/1.0/tasks/${taskGid}/attachments`,
+      method: 'POST',
+      headers
+    }, (res) => {
+      let responseData = '';
+      res.on('data', chunk => { responseData += chunk; });
+      res.on('end', () => {
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          resolve(JSON.parse(responseData));
+        } else {
+          reject(new Error(`Asana attachment error ${res.statusCode}: ${responseData}`));
+        }
+      });
+    });
+
+    req.on('error', reject);
+    form.pipe(req);
+  });
+}
+
 // ── SERVER ───────────────────────────────────────────────────────────────────
 
 const server = http.createServer(async (req, res) => {
@@ -323,10 +394,32 @@ const server = http.createServer(async (req, res) => {
         const data = JSON.parse(body);
         console.log(`Submission received: SMART ${data.package} ${data.depth}`);
 
-        // Run email and Asana in parallel
+        // Email runs independently. Asana task creation must finish before the
+        // PDF can be attached to it, so that step is chained rather than parallel.
+        const asanaWithAttachment = (async () => {
+          const task = await createAsanaTask(data);
+          try {
+            let pdfBuffer;
+            let source;
+            if (data.pdfBase64) {
+              pdfBuffer = Buffer.from(data.pdfBase64, 'base64');
+              source = 'client-rendered snapshot';
+            } else {
+              pdfBuffer = await buildPdfBuffer(data);
+              source = 'server-generated fallback';
+            }
+            const filename = `SMART-Discovery-${safeFileSlug(data.package)}-${safeFileSlug(label(data.q2, Q2_LABELS))}.pdf`;
+            await uploadAsanaAttachment(task.data.gid, pdfBuffer, filename);
+            console.log(`PDF attachment success (${source})`);
+          } catch (attachErr) {
+            console.error('PDF attachment failed:', attachErr.message);
+          }
+          return task;
+        })();
+
         const results = await Promise.allSettled([
           sendEmail(data),
-          createAsanaTask(data)
+          asanaWithAttachment
         ]);
 
         results.forEach((result, i) => {
