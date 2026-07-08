@@ -119,6 +119,14 @@ function buildAgenda(data) {
   lines.push(`FIRST MEETING AGENDA`);
   lines.push(`Recommended package: ${pkg} (${depth} depth)`);
   lines.push(``);
+  lines.push(`CLIENT DETAILS`);
+  lines.push(`   Company: ${data.clientCompany || 'Not provided'}`);
+  lines.push(`   Contact: ${data.clientContact || 'Not provided'}`);
+  lines.push(`   Email: ${data.clientEmail || 'Not provided'}`);
+  if (data.clientWebsite) lines.push(`   Website: ${data.clientWebsite}`);
+  if (data.clientAddress) lines.push(`   Address: ${data.clientAddress}`);
+  if (data.clientCountry) lines.push(`   Country: ${data.clientCountry}`);
+  lines.push(``);
   lines.push(`1. OPEN - confirm understanding of their situation`);
   lines.push(`   Context from form: ${label(data.q1, Q1_LABELS)}`);
   lines.push(`   Business type: ${label(data.q2, Q2_LABELS)}`);
@@ -175,6 +183,11 @@ function buildAgenda(data) {
 
 function buildSummaryText(data) {
   return `
+CLIENT DETAILS
+Company: ${data.clientCompany || 'Not provided'}
+Contact: ${data.clientContact || 'Not provided'}
+Email: ${data.clientEmail || 'Not provided'}${data.clientWebsite ? `\nWebsite: ${data.clientWebsite}` : ''}${data.clientAddress ? `\nAddress: ${data.clientAddress}` : ''}${data.clientCountry ? `\nCountry: ${data.clientCountry}` : ''}
+
 RECOMMENDATION
 Package: SMART ${data.package || 'TBC'}
 Depth: ${data.depth || 'TBC'}
@@ -223,7 +236,8 @@ function sendEmail(data) {
     if (!FROM_EMAIL) return reject(new Error('FROM_EMAIL environment variable is not set'));
     if (!NOTIFY_EMAIL) return reject(new Error('NOTIFY_EMAIL environment variable is not set'));
 
-    const subject = `New SMART Discovery Form: ${label(data.q2, Q2_LABELS)} - ${data.package || 'TBC'} ${data.depth || ''}`;
+    const companyPart = data.clientCompany ? `${data.clientCompany} - ` : '';
+    const subject = `New SMART Discovery Form: ${companyPart}${label(data.q2, Q2_LABELS)} - ${data.package || 'TBC'} ${data.depth || ''}`;
 
     const body = `
 New discovery form submission received.
@@ -278,7 +292,8 @@ function createAsanaTask(data) {
     if (!ASANA_PROJECT_ID) return reject(new Error('ASANA_PROJECT_ID environment variable is not set or is empty'));
 
     const agenda = buildAgenda(data);
-    const taskName = `Discovery: ${label(data.q2, Q2_LABELS)} | SMART ${data.package || 'TBC'} ${data.depth || ''}`;
+    const companyPart = data.clientCompany ? `${data.clientCompany} | ` : '';
+    const taskName = `Discovery: ${companyPart}${label(data.q2, Q2_LABELS)} | SMART ${data.package || 'TBC'} ${data.depth || ''}`;
 
     const body = JSON.stringify({
       data: {

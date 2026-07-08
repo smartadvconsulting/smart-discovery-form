@@ -56,6 +56,11 @@
   .open-text { width: 100%; border: 1.5px solid var(--grey-line); border-radius: 10px; padding: 13px 14px; font-family: 'Inter', sans-serif; font-size: 13.5px; color: var(--black); resize: vertical; min-height: 90px; transition: border-color 0.18s; background: var(--white); line-height: 1.5; }
   .open-text:focus { outline: none; border-color: var(--coral); }
   .open-text::placeholder { color: var(--grey-label); }
+  .field-input { width: 100%; border: 1.5px solid var(--grey-line); border-radius: 10px; padding: 13px 14px; font-family: 'Inter', sans-serif; font-size: 13.5px; color: var(--black); background: var(--white); transition: border-color 0.18s; }
+  .field-input:focus { outline: none; border-color: var(--coral); }
+  .field-input::placeholder { color: var(--grey-label); }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 560px) { .field-row { grid-template-columns: 1fr; } }
   .submit-wrap { text-align: center; margin-top: 28px; }
   .btn-submit { background: var(--coral); color: var(--white); font-family: 'League Spartan', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 0.04em; border: none; border-radius: 10px; padding: 16px 48px; cursor: pointer; transition: background 0.18s, transform 0.1s; display: inline-flex; align-items: center; gap: 8px; }
   .btn-submit:hover { background: #e84d39; }
@@ -122,12 +127,51 @@
 
     <div class="progress-bar-wrap">
       <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
-      <div class="progress-label" id="progress-label">0 of 14</div>
+      <div class="progress-label" id="progress-label">0 of 20</div>
     </div>
 
-    <!-- SECTION 1 -->
+    <!-- SECTION 1: CLIENT DETAILS -->
     <div class="section-block">
-      <div class="section-eyebrow">Section 1 of 4</div>
+      <div class="section-eyebrow">Section 1 of 5</div>
+      <div class="section-title">Your details</div>
+
+      <div class="question">
+        <div class="question-label">Company name</div>
+        <input type="text" class="field-input" id="client-company" placeholder="Your company name" oninput="updateProgress()">
+      </div>
+
+      <div class="question">
+        <div class="question-label">Contact person</div>
+        <input type="text" class="field-input" id="client-contact" placeholder="Full name" oninput="updateProgress()">
+      </div>
+
+      <div class="question">
+        <div class="question-label">Email address</div>
+        <input type="email" class="field-input" id="client-email" placeholder="you@company.com" oninput="updateProgress()">
+      </div>
+
+      <div class="question">
+        <div class="question-label">Website <span style="font-weight:400; color: var(--grey-label);">(optional)</span></div>
+        <input type="text" class="field-input" id="client-website" placeholder="www.yourcompany.com" oninput="updateProgress()">
+      </div>
+
+      <div class="question">
+        <div class="field-row">
+          <div>
+            <div class="question-label">Address <span style="font-weight:400; color: var(--grey-label);">(optional)</span></div>
+            <input type="text" class="field-input" id="client-address" placeholder="Street address, city" oninput="updateProgress()">
+          </div>
+          <div>
+            <div class="question-label">Country <span style="font-weight:400; color: var(--grey-label);">(optional)</span></div>
+            <input type="text" class="field-input" id="client-country" placeholder="Country" oninput="updateProgress()">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2 -->
+    <div class="section-block">
+      <div class="section-eyebrow">Section 2 of 5</div>
       <div class="section-title">About your organisation and Asana</div>
 
       <div class="question">
@@ -158,7 +202,7 @@
 
     <!-- SECTION 2 -->
     <div class="section-block">
-      <div class="section-eyebrow">Section 2 of 4</div>
+      <div class="section-eyebrow">Section 3 of 5</div>
       <div class="section-title">Your team and scope</div>
 
       <div class="question">
@@ -197,7 +241,7 @@
 
     <!-- SECTION 3 -->
     <div class="section-block">
-      <div class="section-eyebrow">Section 3 of 4</div>
+      <div class="section-eyebrow">Section 4 of 5</div>
       <div class="section-title">Your workflows, tools, and pain points</div>
 
       <div class="question">
@@ -283,7 +327,7 @@
 
     <!-- SECTION 4 -->
     <div class="section-block">
-      <div class="section-eyebrow">Section 4 of 4</div>
+      <div class="section-eyebrow">Section 5 of 5</div>
       <div class="section-title">How you want to work and what success looks like</div>
 
       <div class="question">
@@ -328,6 +372,7 @@
       <div class="result-promise" id="res-promise"></div>
       <div class="result-chips" id="res-chips"></div>
     </div>
+    <div class="result-card" id="res-client-details-card" style="display:none"><div class="result-section-title">Client details</div><div id="res-client-details"></div></div>
     <div class="result-card"><div class="result-section-title">Why this recommendation</div><div id="res-reasoning"></div></div>
     <div class="result-card"><div class="result-section-title">Standard modules included</div><div id="res-modules"></div></div>
     <div class="result-card" id="res-addons-card" style="display:none"><div class="result-section-title">Relevant add-ons to consider</div><div id="res-addons"></div></div>
@@ -348,7 +393,7 @@
 
 <script>
   const BACKEND_URL = 'https://smart-discovery-backend.onrender.com';
-  const TOTAL_Q = 14;
+  const TOTAL_Q = 20;
   const answers = {};
   const multiAnswers = { q6: [], q9: [], q10: [], q11: [] };
 
@@ -373,6 +418,10 @@
 
   function updateProgress() {
     let done = 0;
+    const requiredClientFields = ['client-company', 'client-contact', 'client-email'];
+    const optionalClientFields = ['client-website', 'client-address', 'client-country'];
+    requiredClientFields.forEach(id => { if (document.getElementById(id).value.trim().length > 0) done++; });
+    optionalClientFields.forEach(id => { if (document.getElementById(id).value.trim().length > 0) done++; });
     ['q1','q2','q3','q4','q5','q7','q8','q12'].forEach(q => { if (answers[q] !== undefined) done++; });
     done += 4; // q6, q9, q10, q11 are multi (always valid)
     if (document.getElementById('q13').value.trim().length > 0) done++;
@@ -380,7 +429,8 @@
     const pct = Math.round((done / TOTAL_Q) * 100);
     document.getElementById('progress-fill').style.width = Math.min(pct, 100) + '%';
     document.getElementById('progress-label').textContent = Math.min(done, TOTAL_Q) + ' of ' + TOTAL_Q;
-    const missing = ['q1','q2','q3','q4','q5','q7','q8','q12'].filter(q => answers[q] === undefined);
+    const missingClientFields = requiredClientFields.filter(id => document.getElementById(id).value.trim().length === 0);
+    const missing = ['q1','q2','q3','q4','q5','q7','q8','q12'].filter(q => answers[q] === undefined).concat(missingClientFields);
     const btn = document.getElementById('submit-btn');
     const note = document.getElementById('submit-note');
     if (missing.length === 0) { btn.disabled = false; note.textContent = ''; }
@@ -388,6 +438,13 @@
   }
 
   function generateRecommendation() {
+    const clientCompany = document.getElementById('client-company').value.trim();
+    const clientContact = document.getElementById('client-contact').value.trim();
+    const clientEmail   = document.getElementById('client-email').value.trim();
+    const clientWebsite = document.getElementById('client-website').value.trim();
+    const clientAddress = document.getElementById('client-address').value.trim();
+    const clientCountry = document.getElementById('client-country').value.trim();
+
     const q1  = answers.q1;   // asana situation
     const q2  = answers.q2;   // business type
     const q3  = answers.q3;   // team size
@@ -540,6 +597,18 @@
       (depthScore >= 8 ? '<div class="chip chip-outline">High complexity</div>' : '') +
       (q11.includes('ai') && pkg !== 'AI' ? '<div class="chip chip-green">AI interest noted</div>' : '');
 
+    let clientDetailsHtml = '';
+    if (clientCompany) clientDetailsHtml += '<div class="reasoning-item"><strong style="color:var(--black)">Company:</strong>&nbsp;' + clientCompany + '</div>';
+    if (clientContact) clientDetailsHtml += '<div class="reasoning-item"><strong style="color:var(--black)">Contact:</strong>&nbsp;' + clientContact + '</div>';
+    if (clientEmail) clientDetailsHtml += '<div class="reasoning-item"><strong style="color:var(--black)">Email:</strong>&nbsp;' + clientEmail + '</div>';
+    if (clientWebsite) clientDetailsHtml += '<div class="reasoning-item"><strong style="color:var(--black)">Website:</strong>&nbsp;' + clientWebsite + '</div>';
+    if (clientAddress) clientDetailsHtml += '<div class="reasoning-item"><strong style="color:var(--black)">Address:</strong>&nbsp;' + clientAddress + '</div>';
+    if (clientCountry) clientDetailsHtml += '<div class="reasoning-item"><strong style="color:var(--black)">Country:</strong>&nbsp;' + clientCountry + '</div>';
+    if (clientDetailsHtml) {
+      document.getElementById('res-client-details').innerHTML = clientDetailsHtml;
+      document.getElementById('res-client-details-card').style.display = 'block';
+    }
+
     document.getElementById('res-reasoning').innerHTML = reasoning.map(r => '<div class="reasoning-item">' + r + '</div>').join('');
 
     const mods = modulesByPackage[pkg] || [];
@@ -604,6 +673,12 @@
     const submissionPayload = {
       package: pkg,
       depth: depth,
+      clientCompany: clientCompany,
+      clientContact: clientContact,
+      clientEmail: clientEmail,
+      clientWebsite: clientWebsite,
+      clientAddress: clientAddress,
+      clientCountry: clientCountry,
       q1: q1, q2: q2, q3: q3, q4: q4, q5: q5,
       q6: q6, q7: q7, q8: q8, q9: q9, q10: q10, q11: q11, q12: q12,
       successText: successText,
@@ -659,13 +734,14 @@
     for (const k in answers) delete answers[k];
     multiAnswers.q6=[]; multiAnswers.q9=[]; multiAnswers.q10=[]; multiAnswers.q11=[];
     document.querySelectorAll('.opt').forEach(o => o.classList.remove('selected'));
+    ['client-company','client-contact','client-email','client-website','client-address','client-country'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('q13').value = '';
     document.getElementById('q14').value = '';
     document.getElementById('progress-fill').style.width = '0%';
     document.getElementById('progress-label').textContent = '0 of ' + TOTAL_Q;
     document.getElementById('submit-btn').disabled = true;
     document.getElementById('submit-note').textContent = 'Please answer all questions before continuing.';
-    ['res-addons-card','res-open-card','res-tools-card','res-worktype-card'].forEach(id => document.getElementById(id).style.display = 'none');
+    ['res-addons-card','res-open-card','res-tools-card','res-worktype-card','res-client-details-card'].forEach(id => document.getElementById(id).style.display = 'none');
     document.getElementById('result-panel').style.display = 'none';
     document.getElementById('form-panel').style.display = 'block';
     window.scrollTo({ top: 0, behavior: 'smooth' });
