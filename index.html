@@ -346,6 +346,7 @@
 </div>
 
 <script>
+  const BACKEND_URL = 'https://smart-discovery-backend.onrender.com';
   const TOTAL_Q = 14;
   const answers = {};
   const multiAnswers = { q6: [], q9: [], q10: [], q11: [] };
@@ -594,6 +595,21 @@
     document.getElementById('form-panel').style.display = 'none';
     document.getElementById('result-panel').style.display = 'block';
     window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Silently send the completed answers to the backend for email and Asana task creation.
+    // This does not affect what the client sees on screen.
+    fetch(BACKEND_URL + '/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        package: pkg,
+        depth: depth,
+        q1: q1, q2: q2, q3: q3, q4: q4, q5: q5,
+        q6: q6, q7: q7, q8: q8, q9: q9, q10: q10, q11: q11, q12: q12,
+        successText: successText,
+        problemText: problemText
+      })
+    }).catch(err => console.error('Submission to backend failed:', err));
   }
 
   function restart() {
