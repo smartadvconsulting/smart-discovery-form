@@ -126,7 +126,7 @@
 
     <div class="progress-bar-wrap">
       <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
-      <div class="progress-label" id="progress-label">0 of 20</div>
+      <div class="progress-label" id="progress-label">0 of 23</div>
     </div>
 
     <!-- SECTION 1: CLIENT DETAILS -->
@@ -236,6 +236,41 @@
           <div class="opt" data-q="q5" data-val="3" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Yes, and broken handoffs are one of our main problems right now</div></div></div>
         </div>
       </div>
+
+      <div class="question">
+        <div class="question-label">6. Are you currently existing Asana users, or new to Asana?</div>
+        <div class="question-hint">This helps us plan onboarding and migration alongside the build.</div>
+        <div class="options-grid" id="asanaStatus">
+          <div class="opt" data-q="asanaStatus" data-val="existing" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Existing Asana users, already using it today</div></div></div>
+          <div class="opt" data-q="asanaStatus" data-val="new" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">New to Asana, not currently using it</div></div></div>
+          <div class="opt" data-q="asanaStatus" data-val="mixed" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Mixed: some existing users, some new</div></div></div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-label">7. Roughly how many departments or business units exist across your organisation?</div>
+        <div class="question-hint">Think about the wider organisation, not just those directly involved in this engagement.</div>
+        <div class="options-grid" id="deptCount">
+          <div class="opt" data-q="deptCount" data-val="1" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Just one</div></div></div>
+          <div class="opt" data-q="deptCount" data-val="2" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">2 to 3</div></div></div>
+          <div class="opt" data-q="deptCount" data-val="3" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">4 to 10</div></div></div>
+          <div class="opt" data-q="deptCount" data-val="4" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">11 or more</div></div></div>
+          <div class="opt" data-q="deptCount" data-val="0" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Not sure yet</div></div></div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-label">8. Approximately how many users or licences would this involve?</div>
+        <div class="question-hint">An estimate is fine. This helps us plan licensing and rollout alongside the build.</div>
+        <div class="options-grid" id="licenseCount">
+          <div class="opt" data-q="licenseCount" data-val="1" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">1 – 10</div></div></div>
+          <div class="opt" data-q="licenseCount" data-val="2" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">11 – 30</div></div></div>
+          <div class="opt" data-q="licenseCount" data-val="3" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">31 – 75</div></div></div>
+          <div class="opt" data-q="licenseCount" data-val="4" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">76 – 150</div></div></div>
+          <div class="opt" data-q="licenseCount" data-val="5" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">150 or more</div></div></div>
+          <div class="opt" data-q="licenseCount" data-val="0" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Not sure yet</div></div></div>
+        </div>
+      </div>
     </div>
 
     <!-- SECTION 3 -->
@@ -244,7 +279,7 @@
       <div class="section-title">Your workflows, tools, and pain points</div>
 
       <div class="question">
-        <div class="question-label">6. What types of work or projects does your team primarily manage? <span style="font-weight:400; color: var(--grey-label);">(Select all that apply)</span></div>
+        <div class="question-label">9. What types of work or projects does your team primarily manage? <span style="font-weight:400; color: var(--grey-label);">(Select all that apply)</span></div>
         <div class="question-hint">This shapes the structure of what gets built. Different work types require different templates, fields, and layouts in Asana.</div>
         <div class="options-grid" id="q6">
           <div class="opt opt-multi" data-q="q6" data-val="timebound" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Time-bound projects with deadlines and milestones</div><div class="opt-desc">Projects with a defined start and end, tracked against phases or deliverables.</div></div></div>
@@ -258,7 +293,7 @@
       </div>
 
       <div class="question">
-        <div class="question-label">7. How many processes or workflows do you want to address in this engagement?</div>
+        <div class="question-label">10. How many processes or workflows do you want to address in this engagement?</div>
         <div class="question-hint">A workflow is a repeatable process, e.g. client onboarding, campaign delivery, request intake, project delivery. An estimate is fine.</div>
         <div class="options-grid two-col" id="q7">
           <div class="opt" data-q="q7" data-val="1" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">One</div></div></div>
@@ -269,7 +304,7 @@
       </div>
 
       <div class="question">
-        <div class="question-label">8. How would you describe the complexity of your current workflows?</div>
+        <div class="question-label">11. How would you describe the complexity of your current workflows?</div>
         <div class="question-hint">Complexity includes number of steps, approval stages, roles involved, and exceptions.</div>
         <div class="options-grid" id="q8">
           <div class="opt" data-q="q8" data-val="1" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Simple</div><div class="opt-desc">A few clear steps, one or two people, straightforward ownership.</div></div></div>
@@ -280,7 +315,7 @@
       </div>
 
       <div class="question">
-        <div class="question-label">9. Where are the biggest problems in how your team works right now? <span style="font-weight:400; color: var(--grey-label);">(Select all that apply)</span></div>
+        <div class="question-label">12. Where are the biggest problems in how your team works right now? <span style="font-weight:400; color: var(--grey-label);">(Select all that apply)</span></div>
         <div class="question-hint">Pick everything that rings true.</div>
         <div class="options-grid" id="q9">
           <div class="opt opt-multi" data-q="q9" data-val="visibility" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">No visibility into what is actually happening</div><div class="opt-desc">Leadership or managers cannot see the status of work without asking.</div></div></div>
@@ -295,7 +330,7 @@
       </div>
 
       <div class="question">
-        <div class="question-label">10. What other tools is your team currently using alongside Asana? <span style="font-weight:400; color: var(--grey-label);">(Select all that apply)</span></div>
+        <div class="question-label">13. What other tools is your team currently using alongside Asana? <span style="font-weight:400; color: var(--grey-label);">(Select all that apply)</span></div>
         <div class="question-hint">This helps us understand your current stack and where Asana will need to connect or replace something.</div>
         <div class="options-grid two-col" id="q10">
           <div class="opt opt-multi" data-q="q10" data-val="slack" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Slack or Teams</div></div></div>
@@ -310,7 +345,7 @@
       </div>
 
       <div class="question">
-        <div class="question-label">11. What else matters for this engagement? <span style="font-weight:400; color: var(--grey-label);">(Select all that apply)</span></div>
+        <div class="question-label">14. What else matters for this engagement? <span style="font-weight:400; color: var(--grey-label);">(Select all that apply)</span></div>
         <div class="question-hint">These indicate which optional modules may belong in your recommendation.</div>
         <div class="options-grid" id="q11">
           <div class="opt opt-multi" data-q="q11" data-val="dashboards" onclick="multi(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Dashboards or leadership reporting</div><div class="opt-desc">We need visibility into progress, not just task completion.</div></div></div>
@@ -330,7 +365,7 @@
       <div class="section-title">How you want to work and what success looks like</div>
 
       <div class="question">
-        <div class="question-label">12. How involved do you want your team to be in the build?</div>
+        <div class="question-label">15. How involved do you want your team to be in the build?</div>
         <div class="question-hint">There is no wrong answer. Each approach has real advantages depending on your goals and availability.</div>
         <div class="options-grid" id="q12">
           <div class="opt" data-q="q12" data-val="guided" onclick="pick(this)"><div class="opt-check"><div class="opt-check-inner"></div></div><div class="opt-text"><div class="opt-title">Build it together: workshops, collaboration, learning as we go</div><div class="opt-desc">Better for long-term adoption. Requires more of your team's time during the engagement.</div></div></div>
@@ -341,13 +376,13 @@
       </div>
 
       <div class="question">
-        <div class="question-label">13. What does success look like for you at the end of this engagement?</div>
+        <div class="question-label">16. What does success look like for you at the end of this engagement?</div>
         <div class="question-hint">Think about the outcome, not the solution. Examples: "My team is actually using Asana every day," or "Leadership can see project status without asking anyone."</div>
         <textarea class="open-text" id="q13" placeholder="Describe what a successful outcome looks like for your team..." oninput="updateProgress()"></textarea>
       </div>
 
       <div class="question">
-        <div class="question-label">14. In one or two sentences, what is the main problem you want Asana to solve?</div>
+        <div class="question-label">17. In one or two sentences, what is the main problem you want Asana to solve?</div>
         <div class="question-hint">Be honest and direct. Examples: "No one knows where work lives," or "Handoffs keep falling through," or "Leadership has no visibility."</div>
         <textarea class="open-text" id="q14" placeholder="Describe the problem in your own words..." oninput="updateProgress()"></textarea>
       </div>
@@ -383,7 +418,7 @@
 
 <script>
   const BACKEND_URL = 'https://smart-discovery-backend.onrender.com';
-  const TOTAL_Q = 20;
+  const TOTAL_Q = 23;
   const answers = {};
   const multiAnswers = { q6: [], q9: [], q10: [], q11: [] };
 
@@ -412,7 +447,7 @@
     const optionalClientFields = ['client-website', 'client-address', 'client-country'];
     requiredClientFields.forEach(id => { if (document.getElementById(id).value.trim().length > 0) done++; });
     optionalClientFields.forEach(id => { if (document.getElementById(id).value.trim().length > 0) done++; });
-    ['q1','q2','q3','q4','q5','q7','q8','q12'].forEach(q => { if (answers[q] !== undefined) done++; });
+    ['q1','q2','q3','q4','q5','asanaStatus','deptCount','licenseCount','q7','q8','q12'].forEach(q => { if (answers[q] !== undefined) done++; });
     done += 4; // q6, q9, q10, q11 are multi (always valid)
     if (document.getElementById('q13').value.trim().length > 0) done++;
     if (document.getElementById('q14').value.trim().length > 0) done++;
@@ -420,7 +455,7 @@
     document.getElementById('progress-fill').style.width = Math.min(pct, 100) + '%';
     document.getElementById('progress-label').textContent = Math.min(done, TOTAL_Q) + ' of ' + TOTAL_Q;
     const missingClientFields = requiredClientFields.filter(id => document.getElementById(id).value.trim().length === 0);
-    const missing = ['q1','q2','q3','q4','q5','q7','q8','q12'].filter(q => answers[q] === undefined).concat(missingClientFields);
+    const missing = ['q1','q2','q3','q4','q5','asanaStatus','deptCount','licenseCount','q7','q8','q12'].filter(q => answers[q] === undefined).concat(missingClientFields);
     const btn = document.getElementById('submit-btn');
     const note = document.getElementById('submit-note');
     if (missing.length === 0) { btn.disabled = false; note.textContent = ''; }
@@ -440,6 +475,9 @@
     const q3  = answers.q3;   // team size
     const q4  = answers.q4;   // team count
     const q5  = answers.q5;   // cross-functional
+    const asanaStatus = answers.asanaStatus;    // existing / new / mixed
+    const deptCount    = answers.deptCount;     // departments/business units
+    const licenseCount = answers.licenseCount;  // approx users/licences
     const q6  = multiAnswers.q6;  // project/work types
     const q7  = answers.q7;   // workflow count
     const q8  = answers.q8;   // complexity
@@ -491,6 +529,7 @@
       clientAddress: clientAddress,
       clientCountry: clientCountry,
       q1: q1, q2: q2, q3: q3, q4: q4, q5: q5,
+      asanaStatus: asanaStatus, deptCount: deptCount, licenseCount: licenseCount,
       q6: q6, q7: q7, q8: q8, q9: q9, q10: q10, q11: q11, q12: q12,
       successText: successText,
       problemText: problemText

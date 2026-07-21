@@ -46,6 +46,16 @@ const Q5_LABELS = {
   '3': 'Yes, and broken handoffs are one of our main problems'
 };
 
+const ASANA_STATUS_LABELS = {
+  existing: 'Existing Asana users, already using it today',
+  new:      'New to Asana, not currently using it',
+  mixed:    'Mixed: some existing users, some new'
+};
+
+const DEPT_COUNT_LABELS = { '1': 'Just one', '2': '2 to 3', '3': '4 to 10', '4': '11 or more', '0': 'Not sure yet' };
+
+const LICENSE_COUNT_LABELS = { '1': '1-10', '2': '11-30', '3': '31-75', '4': '76-150', '5': '150 or more', '0': 'Not sure yet' };
+
 const Q6_LABELS = {
   timebound:   'Time-bound projects with deadlines and milestones',
   ongoing:     'Ongoing or repeating operations',
@@ -140,6 +150,9 @@ function buildAgenda(data) {
   lines.push(`   Team size: ${label(data.q3, Q3_LABELS)}`);
   lines.push(`   Teams involved: ${label(data.q4, Q4_LABELS)}`);
   lines.push(`   Cross-team flow: ${label(data.q5, Q5_LABELS)}`);
+  lines.push(`   Asana status: ${label(data.asanaStatus, ASANA_STATUS_LABELS)}`);
+  lines.push(`   Departments/business units: ${label(data.deptCount, DEPT_COUNT_LABELS)}`);
+  lines.push(`   Approx. users/licences: ${label(data.licenseCount, LICENSE_COUNT_LABELS)}`);
   lines.push(`   Work types: ${workTypes.length > 0 ? workTypes.join(', ') : 'Not specified'}`);
   lines.push(`   Workflow count: ${label(data.q7, Q7_LABELS)}`);
   lines.push(`   Complexity: ${label(data.q8, Q8_LABELS)}`);
@@ -196,6 +209,9 @@ Business type: ${label(data.q2, Q2_LABELS)}
 Team size: ${label(data.q3, Q3_LABELS)}
 Teams involved: ${label(data.q4, Q4_LABELS)}
 Cross-team flow: ${label(data.q5, Q5_LABELS)}
+Asana status: ${label(data.asanaStatus, ASANA_STATUS_LABELS)}
+Departments/business units: ${label(data.deptCount, DEPT_COUNT_LABELS)}
+Approx. users/licences: ${label(data.licenseCount, LICENSE_COUNT_LABELS)}
 
 WORKFLOWS
 Work types: ${labelMulti(data.q6, Q6_LABELS)}
